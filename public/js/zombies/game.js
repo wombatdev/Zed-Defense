@@ -10,7 +10,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 function preload() {
 	game.load.image('enemy', '/assets/images/trumpzombiesprite.png');
 	game.load.image('pistol', '/assets/images/pistol.png');
-    game.load.image('bullet', '/assets/images/bullet.png');
+    game.load.spritesheet('bullet', '/assets/images/bulletsprites.png', 32, 32);
 	// game.MAX_ZOMBIES = 500; // number of zombies });
 }
 
@@ -26,20 +26,26 @@ function create() {
     game.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
     game.NUMBER_OF_BULLETS = 1; // one bullet at a time
-
 	// Create an object representing our gun
-    this.gun = this.game.add.sprite(0, 0, 'pistol');
-	this.gun.x = (this.game.width/2-this.gun.width/2);
-	this.gun.y = (this.game.height-this.gun.height);
-
-
-
-
-
-
-
-
-
+    game.gun = game.add.sprite(0, 0, 'pistol');
+	game.gun.x = (game.width/2-game.gun.width/2);
+	game.gun.y = (game.height-game.gun.height);
+	// Set the pivot point to the center of the gun
+    game.gun.anchor.setTo(0.5, 0.5);
+	// Create an object pool of bullets
+    game.bulletPool = game.add.group();
+    for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
+        // Create each bullet and add it to the group.
+        var bullet = game.add.sprite(0, 0, 'bullet');
+		bullet.frame = 12;
+        game.bulletPool.add(bullet);
+        // Set its pivot point to the center of the bullet
+        bullet.anchor.setTo(0.5, 0.5);
+        // Enable physics on the bullet
+        game.physics.enable(bullet, Phaser.Physics.ARCADE);
+        // Set its initial state to "dead".
+        bullet.kill();
+    }
 
 
 	// START OF OLD CODE
@@ -88,8 +94,39 @@ function create() {
     // bullets.setAll('outOfBoundsKill', true);
 }
 
-function update() {
+function shootBullet() {
+    // Enforce a short delay between shots by recording
+    // the time that each bullet is shot and testing if
+    // the amount of time since the last shot is more than
+    // the required delay.
+    if (game.lastBulletShotAt === undefined) game.lastBulletShotAt = 0;
+    if (game.time.now - game.lastBulletShotAt < game.SHOT_DELAY) return;
+    game.lastBulletShotAt = game.time.now;
+    // Get a dead bullet from the pool
+    var bullet = game.bulletPool.getFirstDead();
+    // If there aren't any bullets available then don't shoot
+    if (bullet === null || bullet === undefined) return;
+    // Revive the bullet
+    // This makes the bullet "alive"
+    bullet.revive();
+    // Bullets should kill themselves when they leave the world.
+    // Phaser takes care of this for me by setting this flag
+    // but you can do it yourself by killing the bullet if
+    // its x,y coordinates are outside of the world.
+    bullet.checkWorldBounds = true;
+    bullet.outOfBoundsKill = true;
+    // Set the bullet position to the gun position.
+    bullet.reset(game.gun.x, game.gun.y-(game.gun.height/2));
+    // Shoot it
+    bullet.body.velocity.x = 0;
+    bullet.body.velocity.y = -game.BULLET_SPEED;
+};
 
+function update() {
+	// Shoot a bullet
+    if (game.input.activePointer.isDown) {
+        shootBullet();
+    }
 
 
 
@@ -162,6 +199,8 @@ function render() {
     // game.debug.spriteInfo(player, 32, 450);
 
 }
+
+
 
 // End of document on load call
 }
