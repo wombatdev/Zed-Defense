@@ -10,7 +10,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 function preload() {
 	game.load.image('enemy', '/assets/images/trumpzombiesprite.png');
 	game.load.image('pistol', '/assets/images/pistol.png');
-    game.load.spritesheet('bullet', '/assets/images/bulletsprites.png', 32, 32);
+    game.load.image('bullet', '/assets/images/bulletspriteright.png');
 	// game.MAX_ZOMBIES = 500; // number of zombies });
 }
 
@@ -25,19 +25,19 @@ function create() {
 	// Define constants
     game.SHOT_DELAY = 100; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
-    game.NUMBER_OF_BULLETS = 1; // one bullet at a time
+    game.NUMBER_OF_BULLETS = 6; // six bullets at a time
 	// Create an object representing our gun
     game.gun = game.add.sprite(0, 0, 'pistol');
 	game.gun.x = (game.width/2-game.gun.width/2);
-	game.gun.y = (game.height-game.gun.height);
+	game.gun.y = (game.height+game.gun.height/5);
 	// Set the pivot point to the center of the gun
-    game.gun.anchor.setTo(0.5, 0.5);
+    game.gun.anchor.setTo(0.5, 1.0);
 	// Create an object pool of bullets
     game.bulletPool = game.add.group();
     for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
         // Create each bullet and add it to the group.
         var bullet = game.add.sprite(0, 0, 'bullet');
-		bullet.frame = 12;
+		// bullet.frame = 12;
         game.bulletPool.add(bullet);
         // Set its pivot point to the center of the bullet
         bullet.anchor.setTo(0.5, 0.5);
@@ -46,6 +46,10 @@ function create() {
         // Set its initial state to "dead".
         bullet.kill();
     }
+	// Simulate a pointer click/tap input at the center of the stage
+    // when the example begins running (to center the sprite).
+    game.input.activePointer.x = game.width/2;
+    game.input.activePointer.y = game.height/2;
 
 
 	// START OF OLD CODE
@@ -100,12 +104,17 @@ function shootBullet() {
     // the amount of time since the last shot is more than
     // the required delay.
     if (game.lastBulletShotAt === undefined) game.lastBulletShotAt = 0;
+	if (game.lastBulletShotAt > game.time.now) return;
     if (game.time.now - game.lastBulletShotAt < game.SHOT_DELAY) return;
     game.lastBulletShotAt = game.time.now;
     // Get a dead bullet from the pool
     var bullet = game.bulletPool.getFirstDead();
     // If there aren't any bullets available then don't shoot
-    if (bullet === null || bullet === undefined) return;
+    if (bullet === null || bullet === undefined) {
+		game.lastBulletShotAt = game.time.now + 1500;
+		console.log("reloading");
+		return;
+	}
     // Revive the bullet
     // This makes the bullet "alive"
     bullet.revive();
@@ -116,13 +125,22 @@ function shootBullet() {
     bullet.checkWorldBounds = true;
     bullet.outOfBoundsKill = true;
     // Set the bullet position to the gun position.
-    bullet.reset(game.gun.x, game.gun.y-(game.gun.height/2));
-    // Shoot it
-    bullet.body.velocity.x = 0;
-    bullet.body.velocity.y = -game.BULLET_SPEED;
+    // bullet.reset(game.gun.x, (game.gun.y - game.gun.height/2));
+	var point = new Phaser.Point(game.gun.x, game.gun.y - game.gun.height/2);
+	point.rotate(game.gun.x, game.gun.y, game.gun.rotation);
+	bullet.reset(point.x, point.y);
+	bullet.rotation = game.gun.rotation - 1.5708;
+    // Shoot it in the right direction
+	bullet.body.velocity.x = Math.cos(bullet.rotation) * game.BULLET_SPEED;
+    bullet.body.velocity.y = Math.sin(bullet.rotation) * game.BULLET_SPEED;
 };
 
 function update() {
+	// Aim the gun at the pointer.
+    // All this function does is calculate the angle using
+    // Math.atan2(yPointer-yGun, xPointer-xGun)
+    game.gun.rotation = game.physics.arcade.angleToPointer(game.gun) + 1.5708;
+	// console.log(game.gun.rotation);
 	// Shoot a bullet
     if (game.input.activePointer.isDown) {
         shootBullet();
@@ -190,7 +208,7 @@ function update() {
 }
 
 function render() {
-
+	game.debug.body(game.gun);
 
 
 
