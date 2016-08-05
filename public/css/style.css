@@ -1,0 +1,114 @@
+@import 'https://fonts.googleapis.com/css?family=Cinzel:900';
+
+/*canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background: transparent;
+}
+#background {
+    z-index: -2;
+    height: 100%;
+    width: 100%;
+}
+#main {
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+}
+#ship {
+    z-index: 0;
+    height: 100%;
+    width: 100%;
+}*/
+body {
+    /*background: url("/assets/images/whitehouse.png") no-repeat center center fixed;
+    background-size: cover;*/
+    /*animation: backgroundScroll 10s linear infinite;*/
+    color: black;
+    font-family: 'Cinzel', sans-serif;
+}
+/*@keyframes backgroundScroll {
+    from {background-position: 0 0;}
+    to {background-position: 0 400px;}
+}*/
+
+.splash {
+    text-align: center;
+    font-size: 7em;
+    border: .1em solid black;
+    left: 35%;
+    width: 3.6em;
+    position: absolute;
+    top: 35%;
+}
+.main {
+    height: 100%;
+    width: 100%;
+}
+.screen {
+    height: 100%;
+    width: 100%;
+}
+
+.ship1 {
+    height: 3em;
+    width: auto;
+    z-index: 2;
+    visibility: hidden;
+}
+
+.bee {
+    height: 3em;
+    width: auto;
+    z-index: 2;
+    visibility: hidden;
+}
+
+.player1 {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+}
+
+.player2 {
+    position: absolute;
+    top: 100px;
+    left: 400px;
+}
+
+.bullet {
+    height: .4em;
+    width: .4em;
+    background-color: white;
+    border-radius: 50px;
+    position: absolute;
+    z-index: 5;
+}
+.score {
+	position: absolute;
+	top: 5px;
+	left: 480px;
+	color: #FF7F00;
+	font-family: Helvetica, sans-serif;
+	cursor: default;
+}
+.game-over {
+	position: absolute;
+	top: 100px;
+	left: 210px;
+	color: #FF7F00;
+	font-family: Helvetica, sans-serif;
+	font-size: 30px;
+	cursor: default;
+	display: none;
+}
+.game-over span {
+	font-size: 20px;
+	cursor: pointer;
+	position: relative;
+	left: 50px;
+}
+.game-over span:hover {
+	color: #FFD700;
+}
