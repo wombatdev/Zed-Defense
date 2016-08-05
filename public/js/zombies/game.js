@@ -70,18 +70,18 @@ function update() {
         // of the stage
         spawnZombie(game.rnd.integerInRange(50, game.width-50),
             game.height*0.4);
+			console.log("respawn");
     }
 	// If any enemy is within a certain distance of the gun, blow it up
     game.enemyGroup.forEachAlive(function(m) {
         // var distance = this.game.math.distance(m.x, m.y,
         //     game.gun.x, game.gun.y);
-        if (m.y > this.game.height + m.height) {
+        if (m.y > this.game.height - m.height*0.25) {
 			m.scaleTween.stop();
 			m.scaleTween.pendingDelete = false;
+			console.log("killing");
             m.kill();
         }
-		// m.scale.x += 0.005;
-		// m.scale.y += 0.005;
     }, this);
 }
 
@@ -186,7 +186,7 @@ var Enemy = function(game, x, y) {
         );
 	this.scaleTween = game.add.tween(this.scale)
 		.to(
-			{x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, -1, false
+			{x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
 		);
 };
 
@@ -204,7 +204,7 @@ Enemy.prototype.update = function() {
     // target coordinates you need.
     var targetAngle = game.math.angleBetween(
         this.x, this.y,
-        game.gun.x, game.gun.y+(game.height*2)
+        game.gun.x, game.gun.y+(game.height)
     );
     // Add our "wobble" factor to the targetAngle to make the enemy wobble
     // Remember that this.wobble is tweening (above)
