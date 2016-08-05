@@ -28,8 +28,9 @@ function create() {
     game.NUMBER_OF_BULLETS = 1; // one bullet at a time
 
 	// Create an object representing our gun
-    this.gun = this.game.add.sprite((this.game.width/2-16), (this.game.height-80), 'pistol');
-
+    this.gun = this.game.add.sprite(0, 0, 'pistol');
+	this.gun.x = (this.game.width/2-this.gun.width/2);
+	this.gun.y = (this.game.height-this.gun.height);
 
 
 
