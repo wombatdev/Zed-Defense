@@ -201,6 +201,10 @@ var Enemy = function(game, x, y) {
 		.to(
 			{SPEED: 95}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
 		);
+	this.increaseSpawnRateTween = game.add.tween(game)
+		.to(
+			{MAX_ZOMBIES: 8}, 60000, Phaser.Easing.Linear.None, true, 0, 0, false
+		);
 };
 
 // Enemies are a type of Phaser.Sprite
