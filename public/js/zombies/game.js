@@ -22,37 +22,36 @@ var nextFire = 0;
 
 function create() {
 	// Define constants
-    game.SHOT_DELAY = 200; // milliseconds (10 bullets/second)
+    game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
     game.NUMBER_OF_BULLETS = 6; // six bullets at a time
-	game.MAX_ZOMBIES = 8; // number of zombies });
+	game.MAX_ZOMBIES = 4; // number of zombies
+	// Create a group to hold the enemies
+    game.enemyGroup = game.add.group();
+	// Create an object pool of bullets
+	game.bulletPool = game.add.group();
+	for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
+		// Create each bullet and add it to the group.
+		var bullet = game.add.sprite(0, 0, 'bullet');
+		// bullet.frame = 12;
+		game.bulletPool.add(bullet);
+		// Set its pivot point to the center of the bullet
+		bullet.anchor.setTo(0.5, 0.5);
+		// Enable physics on the bullet
+		game.physics.enable(bullet, Phaser.Physics.ARCADE);
+		// Set its initial state to "dead".
+		bullet.kill();
+	}
 	// Create an object representing our gun
-    game.gun = game.add.sprite(0, 0, 'pistol');
+	game.gun = game.add.sprite(0, 0, 'pistol');
 	game.gun.x = (game.width/2-game.gun.width/2);
 	game.gun.y = (game.height+game.gun.height/5);
 	// Set the pivot point to the center of the gun
-    game.gun.anchor.setTo(0.5, 1.0);
-	// Create an object pool of bullets
-    game.bulletPool = game.add.group();
-    for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
-        // Create each bullet and add it to the group.
-        var bullet = game.add.sprite(0, 0, 'bullet');
-		// bullet.frame = 12;
-        game.bulletPool.add(bullet);
-        // Set its pivot point to the center of the bullet
-        bullet.anchor.setTo(0.5, 0.5);
-        // Enable physics on the bullet
-        game.physics.enable(bullet, Phaser.Physics.ARCADE);
-        // Set its initial state to "dead".
-        bullet.kill();
-    }
+	game.gun.anchor.setTo(0.5, 1.0);
 	// Simulate a pointer click/tap input at the center of the stage
-    // when the example begins running (to center the sprite).
-    game.input.activePointer.x = game.width/2;
-    game.input.activePointer.y = game.height/2;
-
-	// Create a group to hold the enemies
-    game.enemyGroup = game.add.group();
+	// when the example begins running (to center the sprite).
+	game.input.activePointer.x = game.width/2;
+	game.input.activePointer.y = game.height/2;
 }
 
 function update() {
@@ -70,24 +69,38 @@ function update() {
         // of the stage
         spawnZombie(game.rnd.integerInRange(50, game.width-50),
             game.height*0.4);
-			console.log("respawn");
     }
 	// If any enemy is within a certain distance of the gun, blow it up
     game.enemyGroup.forEachAlive(function(m) {
         // var distance = this.game.math.distance(m.x, m.y,
         //     game.gun.x, game.gun.y);
         if (m.y > this.game.height - m.height*0.25) {
+			game.gun.kill();
+			console.log("you're dead");
 			m.scaleTween.stop();
 			m.scaleTween.pendingDelete = false;
-			console.log("killing");
             m.kill();
         }
     }, this);
+	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+	game.bulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
+	// game.gun.sort('y', Phaser.Group.SORT_ASCENDING);
+	game.physics.arcade.overlap(game.bulletPool, game.enemyGroup, enemyDeath, null, this);
+	function enemyDeath (bullet, enemy) {
+    	// Removes the enemy from the screen
+		enemy.scaleTween.stop();
+		enemy.scaleTween.pendingDelete = false;
+    	enemy.kill();
+		bullet.kill();
+	}
 }
 
 function render() {
-	game.debug.spriteInfo(game.enemyGroup.hash[0]);
-    // game.debug.text('angularVelocity: ' + sprite.body.angularVelocity, 32, 200);
+	// game.debug.spriteInfo(game.enemyGroup.hash[0]);
+	// game.debug.text(game.Enemy.SPEED);
+	// game.debug.text(game.enemyGroup[0].SPEED);
+	// game.debug.text(game.enemyGroup[0].SPEED);
+    // game.debug.text(game.enemyGroup[0].SPEED);
     // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
     // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
     // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
@@ -140,10 +153,6 @@ function spawnZombie(x, y) {
     // If there aren't any available, create a new one
     if (enemy === null) {
         enemy = new Enemy(game);
-		// console.log("should resize");
-		// enemy.scale.x = 1;
-		// enemy.scale.y = 1;
-		// enemy.scaleTween.start();
         game.enemyGroup.add(enemy);
     }
 
@@ -151,10 +160,10 @@ function spawnZombie(x, y) {
     // You can also define a onRevived event handler in your explosion objects
     // to do stuff when they are revived.
     enemy.revive();
-	console.log("should resize");
 	enemy.scale.x = 1;
 	enemy.scale.y = 1;
 	enemy.scaleTween.start();
+	console.log(enemy.SPEED);
     // Move the enemy to the given coordinates
     enemy.x = x;
     enemy.y = y;
@@ -187,6 +196,10 @@ var Enemy = function(game, x, y) {
 	this.scaleTween = game.add.tween(this.scale)
 		.to(
 			{x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
+		);
+	this.speedUpTween = game.add.tween(this)
+		.to(
+			{SPEED: 95}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
 		);
 };
 
