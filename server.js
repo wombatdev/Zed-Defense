@@ -30,14 +30,17 @@ io.on('connection', function(socket) {
     connectCounter++;
     io.emit('playerJoin', connectCounter);
     console.log('player'+connectCounter+' joined');
-    socket.on('player1move', function(msg) {
+    socket.on('zombieDeath', function(msg) {
         console.log(msg);
-        io.emit('player1move', msg);
     });
-    socket.on('player2move', function(msg) {
-        console.log(msg);
-        io.emit('player2move', msg);
-    });
+    // socket.on('player1move', function(msg) {
+    //     console.log(msg);
+    //     io.emit('player1move', msg);
+    // });
+    // socket.on('player2move', function(msg) {
+    //     console.log(msg);
+    //     io.emit('player2move', msg);
+    // });
     socket.on('disconnect', function() {
         console.log("player has left");
         connectCounter--;

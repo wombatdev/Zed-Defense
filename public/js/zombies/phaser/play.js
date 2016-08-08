@@ -1,5 +1,8 @@
 var playState = {
 create: function() {
+    game.socket = io();
+    // this.client = new Client();
+    // this.client.openConnection();
 	// Define constants
     game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
@@ -75,6 +78,7 @@ update: function() {
 		enemy.scaleTween.pendingDelete = false;
     	enemy.kill();
 		bullet.kill();
+        game.socket.emit('zombieDeath', "zombie died");
 	};
 },
 
@@ -258,13 +262,43 @@ Enemy.prototype.update = function() {
     this.body.velocity.x = Math.cos(this.rotation) * this.SPEED;
     this.body.velocity.y = Math.sin(this.rotation) * this.SPEED;
 };
+
 function formatTime(s) {
         // Convert seconds (s) to a nicely formatted and padded time string
         var minutes = "0" + Math.floor(s / 60);
         var seconds = "0" + (s - minutes * 60);
         return minutes.substr(-2) + ":" + seconds.substr(-2);
 };
+
 function endTimer() {
     game.timer.stop();
     game.state.start('win');
 };
+
+function Client() {
+
+};
+
+// Client.prototype.openConnection = function() {
+//     this.ws = new WebSocket("ws://192.168.178.24:3001");
+//     this.connected = false;
+//     this.ws.onmessage = this.onMessage.bind(this);
+//     this.ws.onerror = this.displayError.bind(this);
+//     this.ws.onopen = this.connectionOpen.bind(this);
+// };
+//
+// Client.prototype.connectionOpen = function() {
+//     this.connected = true;
+//     myText.text = 'connected\n';
+// };
+//
+// Client.prototype.onMessage = function(message) {
+//     myText.text = myText.text + message.data;
+//     var msg = JSON.parse(message.data);
+//     sprite.x = msg.x;
+//     sprite.y = msg.y;
+// };
+//
+// Client.prototype.displayError = function(err) {
+//     console.log('Websocketerror: ' + err);
+// };
