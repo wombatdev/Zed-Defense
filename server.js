@@ -24,12 +24,29 @@ app.get('/*', function(req, res) {
     res.render('game');
 });
 
+var randomString = function(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
 var connectCounter = 0;
+
+var currentPlayers = [];
 
 io.on('connection', function(socket) {
     connectCounter++;
-    io.emit('playerJoin', connectCounter);
-    console.log('player'+connectCounter+' joined');
+    currentPlayers.push({
+        name: 'player'+connectCounter,
+        uid: socket.client.conn.id
+    });
+    console.log(socket.client.conn.id+" has joined");
+    socket.on('playerCountRequest', function(msg) {
+        io.emit('playerCount', currentPlayers.length);
+    });
     socket.on('zombieDeath', function(msg) {
         console.log(msg);
     });
@@ -38,19 +55,17 @@ io.on('connection', function(socket) {
         io.emit('startGame', msg);
     });
     socket.on('bulletFiredOutput', function(msg) {
+        console.log(socket.client.conn.id);
         var incomingMsg = JSON.parse(msg);
-        io.emit('bulletFiredInput', JSON.stringify(incomingMsg));
+        socket.broadcast.emit('bulletFiredInput', JSON.stringify(incomingMsg));
     });
-    // socket.on('player1move', function(msg) {
-    //     console.log(msg);
-    //     io.emit('player1move', msg);
-    // });
-    // socket.on('player2move', function(msg) {
-    //     console.log(msg);
-    //     io.emit('player2move', msg);
-    // });
     socket.on('disconnect', function() {
-        console.log("player has left");
+        console.log(socket.client.conn.id+" has left");
+        for (var i = currentPlayers.length -1 ; i >= 0; i--) {
+            if (currentPlayers[i].uid == socket.client.conn.id) {
+                currentPlayers.splice(i,1);
+            }
+        }
         connectCounter--;
     });
 });

@@ -9,6 +9,11 @@ var menuState = {
 
         spacebarkey.onDown.addOnce(this.startMsg, this);
 
+        game.socket.emit('playerCountRequest', 'request');
+        game.socket.on('playerCount', function(msg) {
+            console.log(msg);
+        });
+
         game.socket.on('startGame', function(msg) {
             game.state.start('play');
         });

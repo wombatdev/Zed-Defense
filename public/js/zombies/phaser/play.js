@@ -5,19 +5,31 @@ create: function() {
 	// Define constants
     game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
-    game.NUMBER_OF_BULLETS = 12; // six bullets at a time
+    game.NUMBER_OF_BULLETS = 6; // six bullets at a time
 	game.MAX_ZOMBIES = 4; // number of zombies
 	// Create a group to hold the enemies
     game.enemyGroup = game.add.group();
-    // // Create an object pool of bullets fired by other players
-	// game.bulletPoolOtherPlayers = game.add.group();
-	// Create an object pool of bullets
-	game.bulletPool = game.add.group();
+    // Create an object pool of bullets fired by other players
+	game.othersBulletPool = game.add.group();
+    for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
+		// Create each bullet and add it to the group.
+		var bullet = game.add.sprite(0, 0, 'bullet');
+		// bullet.frame = 12;
+		game.othersBulletPool.add(bullet);
+		// Set its pivot point to the center of the bullet
+		bullet.anchor.setTo(0.5, 0.5);
+		// Enable physics on the bullet
+		game.physics.enable(bullet, Phaser.Physics.ARCADE);
+		// Set its initial state to "dead".
+		bullet.kill();
+	}
+	// Create an object pool of player bullets
+	game.playerBulletPool = game.add.group();
 	for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
 		// Create each bullet and add it to the group.
 		var bullet = game.add.sprite(0, 0, 'bullet');
 		// bullet.frame = 12;
-		game.bulletPool.add(bullet);
+		game.playerBulletPool.add(bullet);
 		// Set its pivot point to the center of the bullet
 		bullet.anchor.setTo(0.5, 0.5);
 		// Enable physics on the bullet
@@ -54,13 +66,14 @@ update: function() {
         shootBullet();
 	}
     game.socket.on('bulletFiredInput', function(msg) {
-        var bullet = game.bulletPool.getFirstDead();
+        var bullet = game.othersBulletPool.getFirstDead();
         if (bullet === null || bullet === undefined) return;
         bullet.anchor.setTo(0.5, 0.5);
         game.physics.enable(bullet, Phaser.Physics.ARCADE);
         bullet.revive();
         bullet.checkWorldBounds = true;
         bullet.outOfBoundsKill = true;
+        // Set the bullet position to the other player's gun position.
         var incomingMsg = JSON.parse(msg);
         bullet.reset(incomingMsg.x, incomingMsg.y);
         bullet.rotation = incomingMsg.rotation;
@@ -83,14 +96,14 @@ update: function() {
         }
     }, this);
 	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
-	game.bulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
-	game.physics.arcade.overlap(game.bulletPool, game.enemyGroup, enemyDeath, null, this);
+	game.playerBulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
+	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeath, null, this);
 	function enemyDeath (bullet, enemy) {
     	// Removes the enemy from the screen
+		bullet.kill();
 		enemy.scaleTween.stop();
 		enemy.scaleTween.pendingDelete = false;
     	enemy.kill();
-		bullet.kill();
         game.socket.emit('zombieDeath', "zombie died");
 	};
 },
@@ -116,7 +129,7 @@ function shootBullet() {
     if (game.time.now - game.lastBulletShotAt < game.SHOT_DELAY) return;
     game.lastBulletShotAt = game.time.now;
     // Get a dead bullet from the pool
-    var bullet = game.bulletPool.getFirstDead();
+    var bullet = game.playerBulletPool.getFirstDead();
     // If there aren't any bullets available then don't shoot
     if (bullet === null || bullet === undefined) {
         game.lastBulletShotAt = game.time.now + 1500;
@@ -128,12 +141,9 @@ function shootBullet() {
     bullet.revive();
     // Bullets should kill themselves when they leave the world.
     // Phaser takes care of this for me by setting this flag
-    // but you can do it yourself by killing the bullet if
-    // its x,y coordinates are outside of the world.
     bullet.checkWorldBounds = true;
     bullet.outOfBoundsKill = true;
     // Set the bullet position to the gun position.
-    // bullet.reset(game.gun.x, (game.gun.y - game.gun.height/2));
     var point = new Phaser.Point(game.gun.x, game.gun.y - game.gun.height);
     point.rotate(game.gun.x, game.gun.y, game.gun.rotation);
     bullet.reset(point.x, point.y);
@@ -163,7 +173,6 @@ function spawnZombie(x, y) {
     enemy.scale.x = 1;
     enemy.scale.y = 1;
     enemy.scaleTween.start();
-    console.log(enemy.SPEED);
     // Move the enemy to the given coordinates
     enemy.x = x;
     enemy.y = y;
