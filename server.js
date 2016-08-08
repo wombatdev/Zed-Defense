@@ -55,6 +55,6 @@ io.on('connection', function(socket) {
     });
 });
 
-http.listen(3001, function() {
+http.listen(port, function() {
     console.log("We're online on *:3001");
 });
