@@ -1,122 +1,119 @@
 var playState = {
-create: function() {
-    // this.client = new Client();
-    // this.client.openConnection();
-	// Define constants
-    game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
-    game.BULLET_SPEED = 500; // pixels/second
-    game.NUMBER_OF_BULLETS = 6; // six bullets at a time
-	game.MAX_ZOMBIES = 4; // number of zombies
-	// Create a group to hold the enemies
-    game.enemyGroup = game.add.group();
-    // Create an object pool of bullets fired by other players
-	game.othersBulletPool = game.add.group();
-    for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
-		// Create each bullet and add it to the group.
-		var bullet = game.add.sprite(0, 0, 'bullet');
-		// bullet.frame = 12;
-		game.othersBulletPool.add(bullet);
-		// Set its pivot point to the center of the bullet
-		bullet.anchor.setTo(0.5, 0.5);
-		// Enable physics on the bullet
-		game.physics.enable(bullet, Phaser.Physics.ARCADE);
-		// Set its initial state to "dead".
-		bullet.kill();
-	}
-	// Create an object pool of player bullets
-	game.playerBulletPool = game.add.group();
-	for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
-		// Create each bullet and add it to the group.
-		var bullet = game.add.sprite(0, 0, 'bullet');
-		// bullet.frame = 12;
-		game.playerBulletPool.add(bullet);
-		// Set its pivot point to the center of the bullet
-		bullet.anchor.setTo(0.5, 0.5);
-		// Enable physics on the bullet
-		game.physics.enable(bullet, Phaser.Physics.ARCADE);
-		// Set its initial state to "dead".
-		bullet.kill();
-	}
-	// Create an object representing our gun
-	game.gun = game.add.sprite(0, 0, 'pistol');
-	game.gun.x = (game.width/2-game.gun.width/2);
-	game.gun.y = (game.height+game.gun.height/5);
-	// Set the pivot point to the center of the gun
-	game.gun.anchor.setTo(0.5, 1.0);
-	// Simulate a pointer click/tap input at the center of the stage
-	// when the example begins running (to center the sprite).
-	game.input.activePointer.x = game.width/2;
-	game.input.activePointer.y = game.height/2;
+    create: function() {
+    	// Define constants
+        game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
+        game.BULLET_SPEED = 500; // pixels/second
+        game.NUMBER_OF_BULLETS = 6; // six bullets at a time
+    	game.MAX_ZOMBIES = 4; // number of zombies
+    	// Create a group to hold the enemies
+        game.enemyGroup = game.add.group();
+        // Create an object pool of bullets fired by other players
+    	game.othersBulletPool = game.add.group();
+        for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
+    		// Create each bullet and add it to the group.
+    		var bullet = game.add.sprite(0, 0, 'bullet');
+    		// bullet.frame = 12;
+    		game.othersBulletPool.add(bullet);
+    		// Set its pivot point to the center of the bullet
+    		bullet.anchor.setTo(0.5, 0.5);
+    		// Enable physics on the bullet
+    		game.physics.enable(bullet, Phaser.Physics.ARCADE);
+    		// Set its initial state to "dead".
+    		bullet.kill();
+    	}
+    	// Create an object pool of player bullets
+    	game.playerBulletPool = game.add.group();
+    	for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
+    		// Create each bullet and add it to the group.
+    		var bullet = game.add.sprite(0, 0, 'bullet');
+    		// bullet.frame = 12;
+    		game.playerBulletPool.add(bullet);
+    		// Set its pivot point to the center of the bullet
+    		bullet.anchor.setTo(0.5, 0.5);
+    		// Enable physics on the bullet
+    		game.physics.enable(bullet, Phaser.Physics.ARCADE);
+    		// Set its initial state to "dead".
+    		bullet.kill();
+    	}
+    	// Create an object representing our gun
+    	game.gun = game.add.sprite(0, 0, 'pistol');
+    	game.gun.x = (game.width/2-game.gun.width/2);
+    	game.gun.y = (game.height+game.gun.height/5);
+    	// Set the pivot point to the center of the gun
+    	game.gun.anchor.setTo(0.5, 1.0);
+    	// Simulate a pointer click/tap input at the center of the stage
+    	// when the example begins running (to center the sprite).
+    	game.input.activePointer.x = game.width/2;
+    	game.input.activePointer.y = game.height/2;
 
-    game.timer = game.time.create();
-    // Create a delayed event 60s from now
-    game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
-    // Start the timer
-    game.timer.start();
-    // game.time.events.add(Phaser.Timer.SECOND * 60, endTimer, this);
-},
+        game.timer = game.time.create();
+        // Create a delayed event 60s from now
+        game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
+        // Start the timer
+        game.timer.start();
+    },
 
-update: function() {
-	// Aim the gun at the pointer.
-    // All this function does is calculate the angle using
-    // Math.atan2(yPointer-yGun, xPointer-xGun)
-    game.gun.rotation = game.physics.arcade.angleToPointer(game.gun) + Math.PI/2;
-	// Shoot a bullet
-    if (game.input.activePointer.isDown) {
-        shootBullet();
-	}
-    game.socket.on('bulletFiredInput', function(msg) {
-        var bullet = game.othersBulletPool.getFirstDead();
-        if (bullet === null || bullet === undefined) return;
-        bullet.anchor.setTo(0.5, 0.5);
-        game.physics.enable(bullet, Phaser.Physics.ARCADE);
-        bullet.revive();
-        bullet.checkWorldBounds = true;
-        bullet.outOfBoundsKill = true;
-        // Set the bullet position to the other player's gun position.
-        var incomingMsg = JSON.parse(msg);
-        bullet.reset(incomingMsg.x, incomingMsg.y);
-        bullet.rotation = incomingMsg.rotation;
-        // Shoot it in the right direction
-        bullet.body.velocity.x = incomingMsg.xVel;
-        bullet.body.velocity.y = incomingMsg.yVel;
-    });
-	// If there are fewer than MAX_ENEMIES, launch a new one
-    if (game.enemyGroup.countLiving() < game.MAX_ZOMBIES) {
-        // Set the spawn point to a random location below the bottom edge
-        // of the stage
-        spawnZombie(game.rnd.integerInRange(50, game.width-50),
-            game.height*0.4);
-    }
-	// If any enemy reaches the player, the player dies
-    game.enemyGroup.forEachAlive(function(enemy) {
-        if (enemy.y > this.game.height - enemy.height*0.25) {
-            game.timer.stop();
-            game.state.start('lose');
+    update: function() {
+    	// Aim the gun at the pointer.
+        // All this function does is calculate the angle using
+        // Math.atan2(yPointer-yGun, xPointer-xGun)
+        game.gun.rotation = game.physics.arcade.angleToPointer(game.gun) + Math.PI/2;
+    	// Shoot a bullet
+        if (game.input.activePointer.isDown) {
+            shootBullet();
+    	}
+        game.socket.on('bulletFiredInput', function(msg) {
+            var bullet = game.othersBulletPool.getFirstDead();
+            if (bullet === null || bullet === undefined) return;
+            bullet.anchor.setTo(0.5, 0.5);
+            game.physics.enable(bullet, Phaser.Physics.ARCADE);
+            bullet.revive();
+            bullet.checkWorldBounds = true;
+            bullet.outOfBoundsKill = true;
+            // Set the bullet position to the other player's gun position.
+            var incomingMsg = JSON.parse(msg);
+            bullet.reset(incomingMsg.x, incomingMsg.y);
+            bullet.rotation = incomingMsg.rotation;
+            // Shoot it in the right direction
+            bullet.body.velocity.x = incomingMsg.xVel;
+            bullet.body.velocity.y = incomingMsg.yVel;
+        });
+    	// If there are fewer than MAX_ENEMIES, launch a new one
+        if (game.enemyGroup.countLiving() < game.MAX_ZOMBIES) {
+            // Set the spawn point to a random location
+            spawnZombie(game.rnd.integerInRange(50, game.width-50),
+                game.height*0.4);
         }
-    }, this);
-	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
-	game.playerBulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
-	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeath, null, this);
-	function enemyDeath (bullet, enemy) {
-    	// Removes the enemy from the screen
-		bullet.kill();
-		enemy.scaleTween.stop();
-		enemy.scaleTween.pendingDelete = false;
-    	enemy.kill();
-        game.socket.emit('zombieDeath', "zombie died");
-	};
-},
+    	// If any enemy reaches the player, the player dies
+        game.enemyGroup.forEachAlive(function(enemy) {
+            if (enemy.y > this.game.height - enemy.height*0.25) {
+                game.timer.stop();
+                game.state.start('lose');
+            }
+        }, this);
+    	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
+    	game.playerBulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
+    	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeath, null, this);
+        game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeath, null, this);
+    	function enemyDeath (bullet, enemy) {
+        	// Removes the enemy from the screen
+    		bullet.kill();
+    		enemy.scaleTween.stop();
+    		enemy.scaleTween.pendingDelete = false;
+        	enemy.kill();
+            game.socket.emit('zombieDeath', "zombie died");
+    	};
+    },
 
-render: function() {
-    // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
-    if (game.timer.running) {
-        game.debug.text(formatTime(Math.round((game.timerEvent.delay - game.timer.ms) / 1000)), 2, 14, "#ff0");
+    render: function() {
+        // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
+        if (game.timer.running) {
+            game.debug.text(formatTime(Math.round((game.timerEvent.delay - game.timer.ms) / 1000)), 2, 14, "#ff0");
+        }
+        else {
+            game.debug.text("Done!", 2, 14, "#0f0");
+        }
     }
-    else {
-        game.debug.text("Done!", 2, 14, "#0f0");
-    }
-}
 }
 
 function shootBullet() {
@@ -157,18 +154,14 @@ function shootBullet() {
 // Try to get a enemy from the enemyGroup
 // If a enemy isn't available, create a new one and add it to the group.
 function spawnZombie(x, y) {
-    // // Get the first dead enemy from the enemyGroup
+    // Get the first dead enemy from the enemyGroup
     var enemy = game.enemyGroup.getFirstDead();
-
     // If there aren't any available, create a new one
     if (enemy === null) {
         enemy = new Enemy(game);
         game.enemyGroup.add(enemy);
     }
-
     // Revive the enemy (set it's alive property to true)
-    // You can also define a onRevived event handler in your explosion objects
-    // to do stuff when they are revived.
     enemy.revive();
     enemy.scale.x = 1;
     enemy.scale.y = 1;
@@ -296,31 +289,3 @@ function endTimer() {
     game.timer.stop();
     game.state.start('win');
 };
-
-function Client() {
-
-};
-
-// Client.prototype.openConnection = function() {
-//     this.ws = new WebSocket("ws://192.168.178.24:3001");
-//     this.connected = false;
-//     this.ws.onmessage = this.onMessage.bind(this);
-//     this.ws.onerror = this.displayError.bind(this);
-//     this.ws.onopen = this.connectionOpen.bind(this);
-// };
-//
-// Client.prototype.connectionOpen = function() {
-//     this.connected = true;
-//     myText.text = 'connected\n';
-// };
-//
-// Client.prototype.onMessage = function(message) {
-//     myText.text = myText.text + message.data;
-//     var msg = JSON.parse(message.data);
-//     sprite.x = msg.x;
-//     sprite.y = msg.y;
-// };
-//
-// Client.prototype.displayError = function(err) {
-//     console.log('Websocketerror: ' + err);
-// };
