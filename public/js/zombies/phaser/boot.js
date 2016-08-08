@@ -7,7 +7,7 @@ var bootState = {
         game.socket = io();
         // Starting the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
+        // Add advanced timing to monitor frame rate
         game.time.advancedTiming = true
 
         // Calling the load state

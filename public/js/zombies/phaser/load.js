@@ -11,6 +11,7 @@ var loadState = {
         game.load.image('enemy', '/assets/images/trumpzombiesprite.png');
     	game.load.image('pistol', '/assets/images/pistol.png');
         game.load.image('bullet', '/assets/images/bulletspriteright.png');
+        game.load.spritesheet('explosion', '/assets/images/explosion.png', 16, 16);
     },
 
     create: function() {

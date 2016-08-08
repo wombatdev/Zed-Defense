@@ -35,6 +35,8 @@ var playState = {
     		// Set its initial state to "dead".
     		bullet.kill();
     	}
+        // Create a group for explosions
+        game.explosionGroup = game.add.group();
     	// Create an object representing our gun
     	game.gun = game.add.sprite(0, 0, 'pistol');
     	game.gun.x = (game.width/2-game.gun.width/2);
@@ -96,15 +98,26 @@ var playState = {
         }, this);
     	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
     	game.playerBulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
-    	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeath, null, this);
-        game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeath, null, this);
-    	function enemyDeath (bullet, enemy) {
-        	// Removes the enemy from the screen
+    	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeathByPlayer, null, this);
+        game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeathByOther, null, this);
+    	function enemyDeathByPlayer(bullet, enemy) {
+        	// Removes the enemy and bullet from the screen
+            getExplosion(bullet.x, bullet.y);
     		bullet.kill();
     		enemy.scaleTween.stop();
     		enemy.scaleTween.pendingDelete = false;
+            enemy.body.velocity.x = 0;
+            enemy.body.velocity.y = 0;
+            enemy.rotation = -1*Math.PI/2;
+        	// enemy.kill();
+    	};
+        function enemyDeathByOther(bullet, enemy) {
+        	// Removes the enemy and bullet from the screen
+            getExplosion(bullet.x, bullet.y);
+            bullet.kill();
+    		enemy.scaleTween.stop();
+    		enemy.scaleTween.pendingDelete = false;
         	enemy.kill();
-            game.socket.emit('zombieDeath', "zombie died");
     	};
     },
 
@@ -280,6 +293,47 @@ Enemy.prototype.update = function() {
     // Calculate velocity vector based on this.rotation and this.SPEED
     this.body.velocity.x = Math.cos(this.rotation) * this.SPEED;
     this.body.velocity.y = Math.sin(this.rotation) * this.SPEED;
+};
+
+// Try to get a used explosion from the explosionGroup.
+// If an explosion isn't available, create a new one and add it to the group.
+// Setup new explosions so that they animate and kill themselves when the
+// animation is complete.
+function getExplosion(x, y) {
+    // Get the first dead explosion from the explosionGroup
+    var explosion = game.explosionGroup.getFirstDead();
+
+    // If there aren't any available, create a new one
+    if (explosion === null) {
+        explosion = game.add.sprite(0, 0, 'explosion');
+        explosion.anchor.setTo(0.5, 0.5);
+
+        // Add an animation for the explosion that kills the sprite when the
+        // animation is complete
+        var animation = explosion.animations.add('boom', [0,1,2,3], 60, false);
+        animation.killOnComplete = true;
+
+        // Add the explosion sprite to the group
+        game.explosionGroup.add(explosion);
+    }
+
+    // Revive the explosion (set it's alive property to true)
+    // You can also define a onRevived event handler in your explosion objects
+    // to do stuff when they are revived.
+    explosion.revive();
+
+    // Move the explosion to the given coordinates
+    explosion.x = x;
+    explosion.y = y;
+
+    // Set rotation of the explosion at random for a little variety
+    explosion.angle = game.rnd.integerInRange(0, 360);
+
+    // Play the animation
+    explosion.animations.play('boom');
+
+    // Return the explosion itself in case we want to do anything else with it
+    return explosion;
 };
 
 function formatTime(s) {
