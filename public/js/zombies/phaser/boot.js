@@ -8,6 +8,8 @@ var bootState = {
         // Starting the physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
+        game.time.advancedTiming = true
+
         // Calling the load state
         game.state.start('load');
     }

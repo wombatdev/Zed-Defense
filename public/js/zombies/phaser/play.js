@@ -51,6 +51,10 @@ var playState = {
         game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
         // Start the timer
         game.timer.start();
+        game.socket.on('spawnZombieInput', function(msg) {
+            var incomingMsg = JSON.parse(msg);
+            spawnZombie(incomingMsg.x, incomingMsg.y);
+        });
     },
 
     update: function() {
@@ -83,10 +87,6 @@ var playState = {
             // Send the socket notice that an enemy should spawn
             game.socket.emit('spawnZombieOutput', JSON.stringify({x: game.rnd.integerInRange(50, game.width-50), y: game.height*0.4}));
         }
-        game.socket.on('spawnZombieInput', function(msg) {
-            var incomingMsg = JSON.parse(msg);
-            spawnZombie(incomingMsg.x, incomingMsg.y);
-        });
     	// If any enemy reaches the player, the player dies
         game.enemyGroup.forEachAlive(function(enemy) {
             if (enemy.y > this.game.height - enemy.height*0.25) {
@@ -116,6 +116,7 @@ var playState = {
         else {
             game.debug.text("Done!", 2, 14, "#0f0");
         }
+        game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
     }
 }
 
