@@ -1,5 +1,27 @@
 window.onload = function() {
 
+var splash = $(".splash");
+splash.on("click", function(){
+	console.log("click");
+
+var menu_state = {
+	create: function() {
+		// Call the 'start' function when pressing the spacebar
+		var space_key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		space_key.onDown.add(this.start, this);
+		// Defining variables
+		var style = { font: "30px Arial", fill: "#ffffff" };
+		var x = game.world.width/2, y = game.world.height/2;
+		// Adding a text centered on the screen
+		var text = this.game.add.text(x, y-50, "Press space to start", style);
+		text.anchor.setTo(0.5, 0.5);
+	},
+	// Start the actual game
+	start: function() {
+		this.game.state.start('play');
+	}
+};
+
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 	preload: preload,
 	create: create,
@@ -203,7 +225,7 @@ var Enemy = function(game, x, y) {
 		);
 	this.increaseSpawnRateTween = game.add.tween(game)
 		.to(
-			{MAX_ZOMBIES: 8}, 60000, Phaser.Easing.Linear.None, true, 0, 0, false
+			{MAX_ZOMBIES: 8}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
 		);
 };
 
@@ -277,6 +299,9 @@ Enemy.prototype.update = function() {
 };
 
 
+splash.remove();
+// End of jQuery click
+});
 
 // End of document on load call
 }
