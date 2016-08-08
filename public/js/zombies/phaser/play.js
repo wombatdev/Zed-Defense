@@ -80,9 +80,12 @@ var playState = {
         });
     	// If there are fewer than MAX_ENEMIES, launch a new one
         if (game.enemyGroup.countLiving() < game.MAX_ZOMBIES) {
-            // Set the spawn point to a random location
-            spawnZombie(game.rnd.integerInRange(50, game.width-50),
-                game.height*0.4);
+            // Send the socket notice that an enemy should spawn
+            game.socket.emit('spawnZombieOutput', JSON.stringify({x: game.rnd.integerInRange(50, game.width-50), y: game.height*0.4}));
+        }
+        game.socket.on('spawnZombieInput', function(msg) {
+            var incomingMsg = JSON.parse(msg);
+            spawnZombie(incomingMsg.x, incomingMsg.y);
         }
     	// If any enemy reaches the player, the player dies
         game.enemyGroup.forEachAlive(function(enemy) {

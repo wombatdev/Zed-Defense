@@ -59,6 +59,10 @@ io.on('connection', function(socket) {
         var incomingMsg = JSON.parse(msg);
         socket.broadcast.emit('bulletFiredInput', JSON.stringify(incomingMsg));
     });
+    socket.on('spawnZombieOutput', function(msg) {
+        var incomingMsg = JSON.parse(msg);
+        io.emit('spawnZombieInput', JSON.stringify(incomingMsg));
+    });
     socket.on('disconnect', function() {
         console.log(socket.client.conn.id+" has left");
         for (var i = currentPlayers.length -1 ; i >= 0; i--) {
