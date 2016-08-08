@@ -102,14 +102,16 @@ var playState = {
         game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeathByOther, null, this);
     	function enemyDeathByPlayer(bullet, enemy) {
         	// Removes the enemy and bullet from the screen
+            var deathDelay = game.time.now + 1000;
             getExplosion(bullet.x, bullet.y);
     		bullet.kill();
     		enemy.scaleTween.stop();
     		enemy.scaleTween.pendingDelete = false;
             enemy.body.velocity.x = 0;
             enemy.body.velocity.y = 0;
-            enemy.rotation = -1*Math.PI/2;
-        	// enemy.kill();
+            // enemy.rotation = -1*Math.PI/2;
+
+        	enemy.kill();
     	};
         function enemyDeathByOther(bullet, enemy) {
         	// Removes the enemy and bullet from the screen
