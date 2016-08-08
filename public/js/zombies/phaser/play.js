@@ -31,6 +31,13 @@ create: function() {
 	// when the example begins running (to center the sprite).
 	game.input.activePointer.x = game.width/2;
 	game.input.activePointer.y = game.height/2;
+
+    game.timer = game.time.create();
+    // Create a delayed event 60s from now
+    game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
+    // Start the timer
+    game.timer.start();
+    // game.time.events.add(Phaser.Timer.SECOND * 60, endTimer, this);
 },
 
 update: function() {
@@ -54,11 +61,8 @@ update: function() {
         // var distance = this.game.math.distance(m.x, m.y,
         //     game.gun.x, game.gun.y);
         if (m.y > this.game.height - m.height*0.25) {
-			game.gun.kill();
-			console.log("you're dead");
-			m.scaleTween.stop();
-			m.scaleTween.pendingDelete = false;
-            m.kill();
+            game.timer.stop();
+            game.state.start('lose');
         }
     }, this);
 	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
@@ -71,19 +75,17 @@ update: function() {
 		enemy.scaleTween.pendingDelete = false;
     	enemy.kill();
 		bullet.kill();
-	}
+	};
 },
 
 render: function() {
-	// game.debug.spriteInfo(game.enemyGroup.hash[0]);
-	// game.debug.text(game.Enemy.SPEED);
-	// game.debug.text(game.enemyGroup[0].SPEED);
-	// game.debug.text(game.enemyGroup[0].SPEED);
-    // game.debug.text(game.enemyGroup[0].SPEED);
-    // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
-    // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
-    // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
-
+    // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
+    if (game.timer.running) {
+        game.debug.text(formatTime(Math.round((game.timerEvent.delay - game.timer.ms) / 1000)), 2, 14, "#ff0");
+    }
+    else {
+        game.debug.text("Done!", 2, 14, "#0f0");
+    }
 }
 
 }
@@ -184,7 +186,7 @@ var Enemy = function(game, x, y) {
         );
     this.increaseSpawnRateTween = game.add.tween(game)
         .to(
-            {MAX_ZOMBIES: 8}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
+            {MAX_ZOMBIES: 8}, 50000, Phaser.Easing.Linear.None, true, 10000, 0, false
         );
 };
 
@@ -255,4 +257,14 @@ Enemy.prototype.update = function() {
     // Calculate velocity vector based on this.rotation and this.SPEED
     this.body.velocity.x = Math.cos(this.rotation) * this.SPEED;
     this.body.velocity.y = Math.sin(this.rotation) * this.SPEED;
+};
+function formatTime(s) {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);
+};
+function endTimer() {
+    game.timer.stop();
+    game.state.start('win');
 };
