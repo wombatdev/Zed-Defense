@@ -1,48 +1,5 @@
-window.onload = function() {
-
-var splash = $(".splash");
-splash.on("click", function(){
-	console.log("click");
-
-var menu_state = {
-	create: function() {
-		// Call the 'start' function when pressing the spacebar
-		var space_key = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-		space_key.onDown.add(this.start, this);
-		// Defining variables
-		var style = { font: "30px Arial", fill: "#ffffff" };
-		var x = game.world.width/2, y = game.world.height/2;
-		// Adding a text centered on the screen
-		var text = this.game.add.text(x, y-50, "Press space to start", style);
-		text.anchor.setTo(0.5, 0.5);
-	},
-	// Start the actual game
-	start: function() {
-		this.game.state.start('play');
-	}
-};
-
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
-	preload: preload,
-	create: create,
-	update: update,
-	render: render
-});
-
-function preload() {
-	game.load.image('enemy', '/assets/images/trumpzombiesprite.png');
-	game.load.image('pistol', '/assets/images/pistol.png');
-    game.load.image('bullet', '/assets/images/bulletspriteright.png');
-}
-
-// var weapon;
-var sprite;
-var bullets;
-
-var fireRate = 100;
-var nextFire = 0;
-
-function create() {
+var playState = {
+create: function() {
 	// Define constants
     game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
@@ -74,9 +31,16 @@ function create() {
 	// when the example begins running (to center the sprite).
 	game.input.activePointer.x = game.width/2;
 	game.input.activePointer.y = game.height/2;
-}
 
-function update() {
+    game.timer = game.time.create();
+    // Create a delayed event 60s from now
+    game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
+    // Start the timer
+    game.timer.start();
+    // game.time.events.add(Phaser.Timer.SECOND * 60, endTimer, this);
+},
+
+update: function() {
 	// Aim the gun at the pointer.
     // All this function does is calculate the angle using
     // Math.atan2(yPointer-yGun, xPointer-xGun)
@@ -97,11 +61,8 @@ function update() {
         // var distance = this.game.math.distance(m.x, m.y,
         //     game.gun.x, game.gun.y);
         if (m.y > this.game.height - m.height*0.25) {
-			game.gun.kill();
-			console.log("you're dead");
-			m.scaleTween.stop();
-			m.scaleTween.pendingDelete = false;
-            m.kill();
+            game.timer.stop();
+            game.state.start('lose');
         }
     }, this);
 	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
@@ -114,56 +75,56 @@ function update() {
 		enemy.scaleTween.pendingDelete = false;
     	enemy.kill();
 		bullet.kill();
-	}
-}
+	};
+},
 
-function render() {
-	// game.debug.spriteInfo(game.enemyGroup.hash[0]);
-	// game.debug.text(game.Enemy.SPEED);
-	// game.debug.text(game.enemyGroup[0].SPEED);
-	// game.debug.text(game.enemyGroup[0].SPEED);
-    // game.debug.text(game.enemyGroup[0].SPEED);
-    // game.debug.text('angularAcceleration: ' + sprite.body.angularAcceleration, 32, 232);
-    // game.debug.text('angularDrag: ' + sprite.body.angularDrag, 32, 264);
-    // game.debug.text('deltaZ: ' + sprite.body.deltaZ(), 32, 296);
+render: function() {
+    // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
+    if (game.timer.running) {
+        game.debug.text(formatTime(Math.round((game.timerEvent.delay - game.timer.ms) / 1000)), 2, 14, "#ff0");
+    }
+    else {
+        game.debug.text("Done!", 2, 14, "#0f0");
+    }
+}
 
 }
 
 function shootBullet() {
-	// Enforce a short delay between shots by recording
-	// the time that each bullet is shot and testing if
-	// the amount of time since the last shot is more than
-	// the required delay.
-	if (game.lastBulletShotAt === undefined) game.lastBulletShotAt = 0;
-	if (game.lastBulletShotAt > game.time.now) return;
-	if (game.time.now - game.lastBulletShotAt < game.SHOT_DELAY) return;
-	game.lastBulletShotAt = game.time.now;
-	// Get a dead bullet from the pool
-	var bullet = game.bulletPool.getFirstDead();
-	// If there aren't any bullets available then don't shoot
-	if (bullet === null || bullet === undefined) {
-		game.lastBulletShotAt = game.time.now + 1500;
-		console.log("reloading");
-		return;
-	}
-	// Revive the bullet
-	// This makes the bullet "alive"
-	bullet.revive();
-	// Bullets should kill themselves when they leave the world.
-	// Phaser takes care of this for me by setting this flag
-	// but you can do it yourself by killing the bullet if
-	// its x,y coordinates are outside of the world.
-	bullet.checkWorldBounds = true;
-	bullet.outOfBoundsKill = true;
-	// Set the bullet position to the gun position.
-	// bullet.reset(game.gun.x, (game.gun.y - game.gun.height/2));
-	var point = new Phaser.Point(game.gun.x, game.gun.y - game.gun.height);
-	point.rotate(game.gun.x, game.gun.y, game.gun.rotation);
-	bullet.reset(point.x, point.y);
-	bullet.rotation = game.gun.rotation - Math.PI/2;
-	// Shoot it in the right direction
-	bullet.body.velocity.x = Math.cos(bullet.rotation) * game.BULLET_SPEED;
-	bullet.body.velocity.y = Math.sin(bullet.rotation) * game.BULLET_SPEED;
+    // Enforce a short delay between shots by recording
+    // the time that each bullet is shot and testing if
+    // the amount of time since the last shot is more than
+    // the required delay.
+    if (game.lastBulletShotAt === undefined) game.lastBulletShotAt = 0;
+    if (game.lastBulletShotAt > game.time.now) return;
+    if (game.time.now - game.lastBulletShotAt < game.SHOT_DELAY) return;
+    game.lastBulletShotAt = game.time.now;
+    // Get a dead bullet from the pool
+    var bullet = game.bulletPool.getFirstDead();
+    // If there aren't any bullets available then don't shoot
+    if (bullet === null || bullet === undefined) {
+        game.lastBulletShotAt = game.time.now + 1500;
+        console.log("reloading");
+        return;
+    }
+    // Revive the bullet
+    // This makes the bullet "alive"
+    bullet.revive();
+    // Bullets should kill themselves when they leave the world.
+    // Phaser takes care of this for me by setting this flag
+    // but you can do it yourself by killing the bullet if
+    // its x,y coordinates are outside of the world.
+    bullet.checkWorldBounds = true;
+    bullet.outOfBoundsKill = true;
+    // Set the bullet position to the gun position.
+    // bullet.reset(game.gun.x, (game.gun.y - game.gun.height/2));
+    var point = new Phaser.Point(game.gun.x, game.gun.y - game.gun.height);
+    point.rotate(game.gun.x, game.gun.y, game.gun.rotation);
+    bullet.reset(point.x, point.y);
+    bullet.rotation = game.gun.rotation - Math.PI/2;
+    // Shoot it in the right direction
+    bullet.body.velocity.x = Math.cos(bullet.rotation) * game.BULLET_SPEED;
+    bullet.body.velocity.y = Math.sin(bullet.rotation) * game.BULLET_SPEED;
 }
 
 // Try to get a enemy from the enemyGroup
@@ -182,15 +143,15 @@ function spawnZombie(x, y) {
     // You can also define a onRevived event handler in your explosion objects
     // to do stuff when they are revived.
     enemy.revive();
-	enemy.scale.x = 1;
-	enemy.scale.y = 1;
-	enemy.scaleTween.start();
-	console.log(enemy.SPEED);
+    enemy.scale.x = 1;
+    enemy.scale.y = 1;
+    enemy.scaleTween.start();
+    console.log(enemy.SPEED);
     // Move the enemy to the given coordinates
     enemy.x = x;
     enemy.y = y;
     return enemy;
-}
+};
 
 // Enemy constructor
 var Enemy = function(game, x, y) {
@@ -201,7 +162,7 @@ var Enemy = function(game, x, y) {
     game.physics.enable(this, Phaser.Physics.ARCADE);
     // Define constants that affect motion
     this.SPEED = 35; // enemy speed pixels/second
-	// this.GROWTH_RATE = 1; // growth rate in pixels/second
+    // this.GROWTH_RATE = 1; // growth rate in pixels/second
     this.TURN_RATE = 1; // turn rate in degrees/frame
     this.WOBBLE_LIMIT = 2.5; // degrees
     this.WOBBLE_SPEED = 350; // milliseconds
@@ -215,18 +176,18 @@ var Enemy = function(game, x, y) {
             this.WOBBLE_SPEED, Phaser.Easing.Sinusoidal.InOut, true, 0,
             Number.POSITIVE_INFINITY, true
         );
-	this.scaleTween = game.add.tween(this.scale)
-		.to(
-			{x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
-		);
-	this.speedUpTween = game.add.tween(this)
-		.to(
-			{SPEED: 95}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
-		);
-	this.increaseSpawnRateTween = game.add.tween(game)
-		.to(
-			{MAX_ZOMBIES: 8}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
-		);
+    this.scaleTween = game.add.tween(this.scale)
+        .to(
+            {x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
+        );
+    this.speedUpTween = game.add.tween(this)
+        .to(
+            {SPEED: 95}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
+        );
+    this.increaseSpawnRateTween = game.add.tween(game)
+        .to(
+            {MAX_ZOMBIES: 8}, 50000, Phaser.Easing.Linear.None, true, 10000, 0, false
+        );
 };
 
 // Enemies are a type of Phaser.Sprite
@@ -297,11 +258,13 @@ Enemy.prototype.update = function() {
     this.body.velocity.x = Math.cos(this.rotation) * this.SPEED;
     this.body.velocity.y = Math.sin(this.rotation) * this.SPEED;
 };
-
-
-splash.remove();
-// End of jQuery click
-});
-
-// End of document on load call
-}
+function formatTime(s) {
+        // Convert seconds (s) to a nicely formatted and padded time string
+        var minutes = "0" + Math.floor(s / 60);
+        var seconds = "0" + (s - minutes * 60);
+        return minutes.substr(-2) + ":" + seconds.substr(-2);
+};
+function endTimer() {
+    game.timer.stop();
+    game.state.start('win');
+};
