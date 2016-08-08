@@ -186,7 +186,7 @@ var Enemy = function(game, x, y) {
         );
     this.increaseSpawnRateTween = game.add.tween(game)
         .to(
-            {MAX_ZOMBIES: 8}, 50000, Phaser.Easing.Linear.None, true, 10000, 0, false
+            {MAX_ZOMBIES: 8}, 36000, Phaser.Easing.Linear.None, true, 10000, 0, false
         );
 };
 
