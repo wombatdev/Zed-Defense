@@ -86,7 +86,7 @@ var playState = {
         game.socket.on('spawnZombieInput', function(msg) {
             var incomingMsg = JSON.parse(msg);
             spawnZombie(incomingMsg.x, incomingMsg.y);
-        }
+        });
     	// If any enemy reaches the player, the player dies
         game.enemyGroup.forEachAlive(function(enemy) {
             if (enemy.y > this.game.height - enemy.height*0.25) {
