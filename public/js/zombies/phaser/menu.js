@@ -7,9 +7,13 @@ var menuState = {
 
         var spacebarkey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-        spacebarkey.onDown.addOnce(this.start, this);
+        spacebarkey.onDown.addOnce(this.startMsg, this);
+
+        game.socket.on('startGame', function(msg) {
+            game.state.start('play');
+        });
     },
-    start: function() {
-        game.state.start('play');
+    startMsg: function() {
+        game.socket.emit('startGame', "Game starting!");
     }
 };

@@ -33,6 +33,14 @@ io.on('connection', function(socket) {
     socket.on('zombieDeath', function(msg) {
         console.log(msg);
     });
+    socket.on('startGame', function(msg) {
+        console.log(msg);
+        io.emit('startGame', msg);
+    });
+    socket.on('bulletFiredOutput', function(msg) {
+        var incomingMsg = JSON.parse(msg);
+        io.emit('bulletFiredInput', JSON.stringify(incomingMsg));
+    });
     // socket.on('player1move', function(msg) {
     //     console.log(msg);
     //     io.emit('player1move', msg);

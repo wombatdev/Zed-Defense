@@ -1,15 +1,16 @@
 var playState = {
 create: function() {
-    game.socket = io();
     // this.client = new Client();
     // this.client.openConnection();
 	// Define constants
     game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
     game.BULLET_SPEED = 500; // pixels/second
-    game.NUMBER_OF_BULLETS = 6; // six bullets at a time
+    game.NUMBER_OF_BULLETS = 12; // six bullets at a time
 	game.MAX_ZOMBIES = 4; // number of zombies
 	// Create a group to hold the enemies
     game.enemyGroup = game.add.group();
+    // // Create an object pool of bullets fired by other players
+	// game.bulletPoolOtherPlayers = game.add.group();
 	// Create an object pool of bullets
 	game.bulletPool = game.add.group();
 	for(var i = 0; i < game.NUMBER_OF_BULLETS; i++) {
@@ -52,6 +53,21 @@ update: function() {
     if (game.input.activePointer.isDown) {
         shootBullet();
 	}
+    game.socket.on('bulletFiredInput', function(msg) {
+        var bullet = game.bulletPool.getFirstDead();
+        if (bullet === null || bullet === undefined) return;
+        bullet.anchor.setTo(0.5, 0.5);
+        game.physics.enable(bullet, Phaser.Physics.ARCADE);
+        bullet.revive();
+        bullet.checkWorldBounds = true;
+        bullet.outOfBoundsKill = true;
+        var incomingMsg = JSON.parse(msg);
+        bullet.reset(incomingMsg.x, incomingMsg.y);
+        bullet.rotation = incomingMsg.rotation;
+        // Shoot it in the right direction
+        bullet.body.velocity.x = incomingMsg.xVel;
+        bullet.body.velocity.y = incomingMsg.yVel;
+    });
 	// If there are fewer than MAX_ENEMIES, launch a new one
     if (game.enemyGroup.countLiving() < game.MAX_ZOMBIES) {
         // Set the spawn point to a random location below the bottom edge
@@ -59,18 +75,15 @@ update: function() {
         spawnZombie(game.rnd.integerInRange(50, game.width-50),
             game.height*0.4);
     }
-	// If any enemy is within a certain distance of the gun, blow it up
-    game.enemyGroup.forEachAlive(function(m) {
-        // var distance = this.game.math.distance(m.x, m.y,
-        //     game.gun.x, game.gun.y);
-        if (m.y > this.game.height - m.height*0.25) {
+	// If any enemy reaches the player, the player dies
+    game.enemyGroup.forEachAlive(function(enemy) {
+        if (enemy.y > this.game.height - enemy.height*0.25) {
             game.timer.stop();
             game.state.start('lose');
         }
     }, this);
 	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
 	game.bulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
-	// game.gun.sort('y', Phaser.Group.SORT_ASCENDING);
 	game.physics.arcade.overlap(game.bulletPool, game.enemyGroup, enemyDeath, null, this);
 	function enemyDeath (bullet, enemy) {
     	// Removes the enemy from the screen
@@ -91,7 +104,6 @@ render: function() {
         game.debug.text("Done!", 2, 14, "#0f0");
     }
 }
-
 }
 
 function shootBullet() {
@@ -129,6 +141,7 @@ function shootBullet() {
     // Shoot it in the right direction
     bullet.body.velocity.x = Math.cos(bullet.rotation) * game.BULLET_SPEED;
     bullet.body.velocity.y = Math.sin(bullet.rotation) * game.BULLET_SPEED;
+    game.socket.emit('bulletFiredOutput', JSON.stringify({x: bullet.x, y: bullet.y, rotation: bullet.rotation, xVel: bullet.body.velocity.x, yVel: bullet.body.velocity.y}));
 }
 
 // Try to get a enemy from the enemyGroup
