@@ -6,14 +6,14 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 
 app.set("port", process.env.PORT || 3001);
-app.set("view engine", "hbs");
 
-app.engine(".hbs", hbs({
-    extname: ".hbs",
-    partialsDir: "views/",
-    layoutsDir: "views/",
-    defaultLayout: "layout-main"
-}));
+// app.set("view engine", "hbs");
+// app.engine(".hbs", hbs({
+//     extname: ".hbs",
+//     partialsDir: "views/",
+//     layoutsDir: "views/",
+//     defaultLayout: "layout-main"
+// }));
 
 app.use("/assets", express.static("public"));
 app.use(parser.json({
@@ -21,7 +21,7 @@ app.use(parser.json({
 }));
 
 app.get('/*', function(req, res) {
-    res.render('game');
+    res.sendFile(__dirname + '/index.html');
 });
 
 var randomString = function(length) {
