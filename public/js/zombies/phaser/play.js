@@ -1,6 +1,7 @@
 var playState = {
     create: function() {
-
+        // Define cursor keys
+        game.cursors = game.input.keyboard.createCursorKeys();
         this.bmd = this.add.bitmapData(this.game.width, this.game.height);
         this.bmd.addToWorld();
     	// Define constants
@@ -92,6 +93,13 @@ var playState = {
     },
 
     update: function() {
+        // Move the camera on left/right
+        if (game.cursors.left.isDown) {
+            game.camera.x -= 4;
+        }
+        else if (game.cursors.right.isDown) {
+            game.camera.x += 4;
+        }
     	// Aim the gun at the pointer.
         // All this function does is calculate the angle using
         // Math.atan2(yPointer-yGun, xPointer-xGun)
@@ -185,12 +193,13 @@ var playState = {
             game.debug.text("Done!", 2, 14, "#0f0");
         }
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
-        var pixelHeightDebug = 70;
-        game.enemyGroup.forEachAlive(function(enemy) {
-            // game.debug.body(enemy);
-            game.debug.text(enemy.scale, 2, pixelHeightDebug, "#00ff00");
-            pixelHeightDebug += 14;
-        }, this);
+        game.debug.text(game.enemyGroup.total || '--', 2, 42, "#00ff00");
+        // var pixelHeightDebug = 56;
+        // game.enemyGroup.forEachAlive(function(enemy) {
+        //     // game.debug.body(enemy);
+        //     game.debug.text(enemy.scale, 2, pixelHeightDebug, "#00ff00");
+        //     pixelHeightDebug += 14;
+        // }, this);
     }
 }
 
