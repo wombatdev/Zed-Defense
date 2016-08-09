@@ -10,9 +10,8 @@
 
     function PlayControllerFunction($scope) {
 
-        var socket = io();
         var vm = this;
 
-        
+
     }
 })();

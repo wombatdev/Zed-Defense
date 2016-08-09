@@ -9,7 +9,7 @@
         ])
 
     function SplashControllerFunction($scope) {
-        var socket = io();
+
         var vm = this;
     }
 

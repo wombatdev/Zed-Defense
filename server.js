@@ -58,13 +58,13 @@ io.on('connection', function(socket) {
         connectCounter--;
     });
     socket.on('otherPlayersCheckOutput', function(msg) {
-        for (var i = currentPlayers.length -1 ; i >= 0; i--) {
-            if (currentPlayers[i].uid == socket.client.conn.id) {
-                var response = currentPlayers.slice(i,i+1);
-                console.log(response);
-                console.log(currentPlayers);
+        var response = currentPlayers.filter(function(player) {
+            if (player.uid != socket.client.conn.id) {
+                return player;
             }
-        }
+        });
+        console.log(response);
+        console.log(currentPlayers);
         socket.emit('otherPlayersCheckInput', response);
     });
     socket.on('startGame', function(msg) {
