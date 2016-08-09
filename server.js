@@ -43,36 +43,11 @@ io.on('connection', function(socket) {
         name: 'player'+connectCounter,
         uid: socket.client.conn.id
     });
+    // console.log(socket);
     console.log(socket.client.conn.id+" has joined");
     // socket.on('playerCountRequest', function(msg) {
     //     io.emit('playerCount', currentPlayers.length);
     // });
-    socket.on('otherPlayersCheckOutput', function(msg) {
-        for (var i = currentPlayers.length -1 ; i >= 0; i--) {
-            if (currentPlayers[i].uid == socket.client.conn.id) {
-                var response = currentPlayers.slice(i,i+1);
-                console.log(response);
-                console.log(currentPlayers);
-            }
-        }
-        io.emit('otherPlayersCheckInput', response);
-    });
-    socket.on('zombieDeath', function(msg) {
-        console.log(msg);
-    });
-    socket.on('startGame', function(msg) {
-        console.log(msg);
-        io.emit('startGame', msg);
-    });
-    socket.on('bulletFiredOutput', function(msg) {
-        console.log(socket.client.conn.id);
-        var incomingMsg = JSON.parse(msg);
-        socket.broadcast.emit('bulletFiredInput', JSON.stringify(incomingMsg));
-    });
-    socket.on('spawnZombieOutput', function(msg) {
-        var incomingMsg = JSON.parse(msg);
-        io.emit('spawnZombieInput', JSON.stringify(incomingMsg));
-    });
     socket.on('disconnect', function() {
         console.log(socket.client.conn.id+" has left");
         for (var i = currentPlayers.length -1 ; i >= 0; i--) {
@@ -82,7 +57,32 @@ io.on('connection', function(socket) {
         }
         connectCounter--;
     });
+    socket.on('otherPlayersCheckOutput', function(msg) {
+        for (var i = currentPlayers.length -1 ; i >= 0; i--) {
+            if (currentPlayers[i].uid == socket.client.conn.id) {
+                var response = currentPlayers.slice(i,i+1);
+                console.log(response);
+                console.log(currentPlayers);
+            }
+        }
+        socket.emit('otherPlayersCheckInput', response);
+    });
+    socket.on('startGame', function(msg) {
+        console.log(msg);
+        io.emit('startGame', msg);
+    });
+    socket.on('bulletFiredOutput', function(msg) {
+        var incomingMsg = JSON.parse(msg);
+        socket.broadcast.emit('bulletFiredInput', JSON.stringify(incomingMsg));
+    });
+    socket.on('spawnZombieOutput', function(msg) {
+        var incomingMsg = JSON.parse(msg);
+        io.emit('spawnZombieInput', JSON.stringify(incomingMsg));
+    });
 });
+
+
+// });
 
 http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");

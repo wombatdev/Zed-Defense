@@ -1,5 +1,7 @@
 var playState = {
     create: function() {
+        // Define world size
+        game.world.setBounds(0, 0, 1600, 600);
         // Define cursor keys
         game.cursors = game.input.keyboard.createCursorKeys();
         this.bmd = this.add.bitmapData(this.game.width, this.game.height);
@@ -48,7 +50,8 @@ var playState = {
     	game.gun.y = (game.height+game.gun.height/5);
     	// Set the pivot point to the center of the gun
     	game.gun.anchor.setTo(0.5, 1.0);
-
+        // Set the camera to follow the player
+        game.camera.follow(game.gun);
         // Create an object pool of other players' guns
     	game.otherPlayersGuns = game.add.group();
         // Create objects representing guns for other players
@@ -93,13 +96,15 @@ var playState = {
     },
 
     update: function() {
-        // Move the camera on left/right
+        // Move the player on left/right
         if (game.cursors.left.isDown) {
-            game.camera.x -= 4;
+            game.gun.x -= 10;
         }
         else if (game.cursors.right.isDown) {
-            game.camera.x += 4;
+            game.gun.x += 10;
         }
+        // Set the world to wrap 360 degrees!
+        game.world.wrap(game.gun, 0, true, true, false);
     	// Aim the gun at the pointer.
         // All this function does is calculate the angle using
         // Math.atan2(yPointer-yGun, xPointer-xGun)
@@ -144,14 +149,6 @@ var playState = {
             // var centerMass =
             if (bullet.x >= enemy.x-enemy.width/4 && bullet.x <= enemy.x+enemy.width/4) {
                 if (bullet.y >= enemy.y-enemy.height/2 && bullet.y <= enemy.y) {
-                    console.log(bullet.x >= enemy.x-enemy.width/4 || bullet.x <= enemy.x+enemy.width/4);
-                    console.log(bullet.y >= enemy.y-enemy.height/2 && bullet.y <= enemy.y);
-                    console.log("bullet x: "+bullet.x);
-                    console.log("bullet y: "+bullet.y);
-                    console.log(enemy.x-enemy.width/4);
-                    console.log(enemy.x+enemy.width/4);
-                    console.log(enemy.y-enemy.height/2);
-                    console.log(enemy.y);
                     return true;
                 }
                 else {
@@ -194,6 +191,7 @@ var playState = {
         }
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
         game.debug.text(game.enemyGroup.total || '--', 2, 42, "#00ff00");
+        game.debug.cameraInfo(game.camera, 32, 32);
         // var pixelHeightDebug = 56;
         // game.enemyGroup.forEachAlive(function(enemy) {
         //     // game.debug.body(enemy);
