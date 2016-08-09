@@ -12,6 +12,8 @@ var loadState = {
     	game.load.image('pistol', '/assets/images/pistol.png');
         game.load.image('bullet', '/assets/images/bulletspriteright.png');
         game.load.spritesheet('explosion', '/assets/images/explosion.png', 16, 16);
+        game.load.image('leftarrow', '/assets/images/arrowleft.png');
+        game.load.image('rightarrow', '/assets/images/arrowright.png');
 
         // Create empty bitmap for enemy paths
         game.bmd = null;

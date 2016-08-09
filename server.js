@@ -45,9 +45,6 @@ io.on('connection', function(socket) {
     });
     // console.log(socket);
     console.log(socket.client.conn.id+" has joined");
-    // socket.on('playerCountRequest', function(msg) {
-    //     io.emit('playerCount', currentPlayers.length);
-    // });
     socket.on('disconnect', function() {
         console.log(socket.client.conn.id+" has left");
         for (var i = currentPlayers.length -1 ; i >= 0; i--) {
@@ -78,6 +75,15 @@ io.on('connection', function(socket) {
     socket.on('spawnZombieOutput', function(msg) {
         var incomingMsg = JSON.parse(msg);
         io.emit('spawnZombieInput', JSON.stringify(incomingMsg));
+    });
+    socket.on('playerMovingOutput', function(msg) {
+        var direction = msg;
+        var player = socket.client.conn.id;
+        var response = ({
+            player: player,
+            direction: direction
+        });
+        socket.broadcast.emit('playerMovingInput', JSON.stringify(response));
     });
 });
 
