@@ -13,7 +13,11 @@ var loadState = {
         game.load.image('bullet', '/assets/images/bulletspriteright.png');
         game.load.spritesheet('explosion', '/assets/images/explosion.png', 16, 16);
 
+        // Create empty bitmap for enemy paths
         game.bmd = null;
+
+        // Create array to hold players
+        game.otherPlayersInGame = [];
     },
 
     create: function() {

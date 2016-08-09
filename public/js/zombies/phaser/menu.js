@@ -9,9 +9,18 @@ var menuState = {
 
         spacebarkey.onDown.addOnce(this.startMsg, this);
 
-        game.socket.emit('playerCountRequest', 'request');
-        game.socket.on('playerCount', function(msg) {
-            console.log(msg);
+        // game.socket.emit('playerCountRequest', 'request');
+        // game.socket.on('playerCount', function(msg) {
+        //     console.log(msg);
+        // });
+
+        // Send a socket request for additional players
+        game.socket.emit('otherPlayersCheckOutput', 'request');
+        game.socket.on('otherPlayersCheckInput', function(msg) {
+            msg.forEach(function(player) {
+                game.otherPlayersInGame.push(player);
+            });
+            console.log(game.otherPlayersInGame);
         });
 
         game.socket.on('startGame', function(msg) {

@@ -40,16 +40,45 @@ var playState = {
     	}
         // Create a group for explosions
         game.explosionGroup = game.add.group();
+
     	// Create an object representing our gun
     	game.gun = game.add.sprite(0, 0, 'pistol');
     	game.gun.x = (game.width/2-game.gun.width/2);
     	game.gun.y = (game.height+game.gun.height/5);
     	// Set the pivot point to the center of the gun
     	game.gun.anchor.setTo(0.5, 1.0);
-    	// Simulate a pointer click/tap input at the center of the stage
-    	// when the example begins running (to center the sprite).
-    	game.input.activePointer.x = game.width/2;
-    	game.input.activePointer.y = game.height/2;
+
+        // Create an object pool of other players' guns
+    	game.otherPlayersGuns = game.add.group();
+        // Create objects representing guns for other players
+        // First create an array defining where they should be placed
+        game.gunLocations = [
+            {key: 0,
+            x: game.gun.x-200},
+            {key: 1,
+            x: game.gun.x+200},
+            {key: 2,
+            x: game.gun.x-100},
+            {key: 3,
+            x: game.gun.x+100}
+        ];
+        game.otherPlayersInGame.forEach(function(player, index) {
+            for (var i = game.gunLocations.length -1 ; i >= 0; i--) {
+                if (game.gunLocations[i].key == index) {
+                    var gun = game.add.sprite(0, 0, 'pistol');
+                    game.otherPlayersGuns.add(gun);
+                	gun.x = game.gunLocations[i].x;
+                	gun.y = (game.height+game.gun.height/5);
+                    // Set the pivot point to the center of the gun
+                	gun.anchor.setTo(0.5, 1.0);
+                }
+            }
+        }, this);
+
+        // Simulate a pointer click/tap input at the center of the stage
+        // when the example begins running (to center the sprite).
+        game.input.activePointer.x = game.width/2;
+        game.input.activePointer.y = game.height/2;
 
         game.timer = game.time.create();
         // Create a delayed event 60s from now
@@ -101,8 +130,30 @@ var playState = {
         }, this);
     	game.enemyGroup.sort('y', Phaser.Group.SORT_ASCENDING);
     	game.playerBulletPool.sort('y', Phaser.Group.SORT_ASCENDING);
-    	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeathByPlayer, null, this);
-        game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeathByOther, null, this);
+    	game.physics.arcade.overlap(game.playerBulletPool, game.enemyGroup, enemyDeathByPlayer, centerMassCheck, this);
+        game.physics.arcade.overlap(game.othersBulletPool, game.enemyGroup, enemyDeathByOther, centerMassCheck, this);
+        function centerMassCheck(bullet, enemy) {
+            // var centerMass =
+            if (bullet.x >= enemy.x-enemy.width/4 && bullet.x <= enemy.x+enemy.width/4) {
+                if (bullet.y >= enemy.y-enemy.height/2 && bullet.y <= enemy.y) {
+                    console.log(bullet.x >= enemy.x-enemy.width/4 || bullet.x <= enemy.x+enemy.width/4);
+                    console.log(bullet.y >= enemy.y-enemy.height/2 && bullet.y <= enemy.y);
+                    console.log("bullet x: "+bullet.x);
+                    console.log("bullet y: "+bullet.y);
+                    console.log(enemy.x-enemy.width/4);
+                    console.log(enemy.x+enemy.width/4);
+                    console.log(enemy.y-enemy.height/2);
+                    console.log(enemy.y);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
     	function enemyDeathByPlayer(bullet, enemy) {
         	// Removes the enemy and bullet from the screen
             var deathDelay = game.time.now + 1000;
@@ -113,7 +164,6 @@ var playState = {
             enemy.body.velocity.x = 0;
             enemy.body.velocity.y = 0;
             // enemy.rotation = -1*Math.PI/2;
-
         	enemy.kill();
     	};
         function enemyDeathByOther(bullet, enemy) {
@@ -135,10 +185,10 @@ var playState = {
             game.debug.text("Done!", 2, 14, "#0f0");
         }
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
-        var pixelHeightDebug = 56;
+        var pixelHeightDebug = 70;
         game.enemyGroup.forEachAlive(function(enemy) {
-            game.debug.body(enemy);
-            game.debug.text(enemy.rotation, 2, pixelHeightDebug, "#00ff00");
+            // game.debug.body(enemy);
+            game.debug.text(enemy.scale, 2, pixelHeightDebug, "#00ff00");
             pixelHeightDebug += 14;
         }, this);
     }
@@ -228,6 +278,10 @@ var Enemy = function(game, x, y) {
         .to(
             {x: 8, y: 8}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
         );
+    // this.setSizeTween = game.add.tween(this.body)
+    //     .to(
+    //         {width: this.width*2, height: this.height*2, offsetX: this.width/2, offsetY: -this.height/2}, 10000, Phaser.Easing.Linear.In, true, 0, 0, false
+    //     );
     this.speedUpTween = game.add.tween(this)
         .to(
             {SPEED: 95}, 45000, Phaser.Easing.Linear.None, true, 0, 0, false
@@ -247,6 +301,10 @@ Enemy.prototype.update = function() {
     if (!this.alive) {
         return;
     }
+    // this.setSizeTween = game.add.tween(this.body)
+    //     .to(
+    //         {width: this.width/2, height: this.height/2, offsetX: this.width/4, offsetY: 0}, 100, Phaser.Easing.Linear.In, true, 0, -1, false
+    //     );
     // Calculate the angle from the enemy to the gun. game.gun.x
     // and game.gun.y are the gun position; substitute with whatever
     // target coordinates you need.
