@@ -3,15 +3,14 @@
 (function() {
     angular
         .module("zombiedefense")
-        .controller("PlayController", [
+        .controller("MenuController", [
             "$scope",
-            PlayControllerFunction
+            MenuControllerFunction
         ])
 
-    function PlayControllerFunction($scope) {
+    function MenuControllerFunction($scope) {
 
         var vm = this;
-
-
     }
+
 })();

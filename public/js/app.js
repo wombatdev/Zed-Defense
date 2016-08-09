@@ -5,10 +5,9 @@
     angular
         .module("zombiedefense", [
             "ngResource",
-            "ui.router",
+            "ui.router"
             // "ngAnimate",
-            "zombies",
-            // "game"
+            // "oc.lazyLoad"
         ])
         .config([
             "$stateProvider",
@@ -22,13 +21,19 @@
         $stateProvider
             .state("Splash", {
                 url: "/",
-                templateUrl: "/assets/js/zombies/splash.html",
+                templateUrl: "/assets/js/states/splash.html",
                 controller: "SplashController",
                 controllerAs: "SplashViewModel"
             })
+            .state("Menu", {
+                url: "/",
+                templateUrl: "/assets/js/states/menu.html",
+                controller: "MenuController",
+                controllerAs: "MenuViewModel"
+            })
             .state("Play", {
                 url: "/play",
-                templateUrl: "/assets/js/zombies/play.html",
+                templateUrl: "/assets/js/states/play.html",
                 controller: "PlayController",
                 controllerAs: "PlayViewModel"
             })
