@@ -43,6 +43,7 @@ io.on('connection', function(socket) {
         name: 'player'+connectCounter,
         uid: socket.client.conn.id
     });
+    // console.log(socket);
     console.log(socket.client.conn.id+" has joined");
     // socket.on('playerCountRequest', function(msg) {
     //     io.emit('playerCount', currentPlayers.length);
