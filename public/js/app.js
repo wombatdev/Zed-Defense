@@ -37,6 +37,12 @@
                 controller: "SignupController",
                 controllerAs: "SignupViewModel"
             })
+            .state("Signin", {
+                url: "/signin",
+                templateUrl: "/assets/js/states/signin.html",
+                controller: "SigninController",
+                controllerAs: "SigninViewModel"
+            })
             .state("Play", {
                 url: "/play",
                 templateUrl: "/assets/js/states/play.html",

@@ -3,12 +3,12 @@
 (function() {
     angular
         .module("zombiedefense")
-        .controller("SignupController", [
+        .controller("SigninController", [
             "$scope",
-            SignupControllerFunction
+            SigninControllerFunction
         ])
 
-    function SignupControllerFunction($scope) {
+    function SigninControllerFunction($scope) {
 
         var vm = this;
     }
