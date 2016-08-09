@@ -1,5 +1,8 @@
 var playState = {
     create: function() {
+
+        this.bmd = this.add.bitmapData(this.game.width, this.game.height);
+        this.bmd.addToWorld();
     	// Define constants
         game.SHOT_DELAY = 250; // milliseconds (10 bullets/second)
         game.BULLET_SPEED = 500; // pixels/second
@@ -132,6 +135,12 @@ var playState = {
             game.debug.text("Done!", 2, 14, "#0f0");
         }
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
+        var pixelHeightDebug = 56;
+        game.enemyGroup.forEachAlive(function(enemy) {
+            game.debug.body(enemy);
+            game.debug.text(enemy.rotation, 2, pixelHeightDebug, "#00ff00");
+            pixelHeightDebug += 14;
+        }, this);
     }
 }
 
@@ -195,7 +204,7 @@ function spawnZombie(x, y) {
 var Enemy = function(game, x, y) {
     Phaser.Sprite.call(this, game, x, y, 'enemy');
     // Set the pivot point for this sprite to the center
-    this.anchor.setTo(0.5, 1.0);
+    this.anchor.setTo(0.5, 0.5);
     // Enable physics on the enemy
     game.physics.enable(this, Phaser.Physics.ARCADE);
     // Define constants that affect motion
@@ -204,7 +213,8 @@ var Enemy = function(game, x, y) {
     this.TURN_RATE = 1; // turn rate in degrees/frame
     this.WOBBLE_LIMIT = 2.5; // degrees
     this.WOBBLE_SPEED = 350; // milliseconds
-    this.AVOID_DISTANCE = 100; // pixels
+    // orig. 100px
+    this.AVOID_DISTANCE = 0; // pixels
     // Create a variable called wobble that tweens back and forth between
     // -this.WOBBLE_LIMIT and +this.WOBBLE_LIMIT forever
     this.wobble = this.WOBBLE_LIMIT;
@@ -244,9 +254,10 @@ Enemy.prototype.update = function() {
         this.x, this.y,
         game.gun.x, game.gun.y+(game.height)
     );
-    // Add our "wobble" factor to the targetAngle to make the enemy wobble
-    // Remember that this.wobble is tweening (above)
-    targetAngle += this.game.math.degToRad(this.wobble);
+    // console.log(targetAngle);
+    // // Add our "wobble" factor to the targetAngle to make the enemy wobble
+    // // Remember that this.wobble is tweening (above)
+    // targetAngle += this.game.math.degToRad(this.wobble);
 
 
     // Make each enemy steer away from other enemies.
@@ -263,38 +274,43 @@ Enemy.prototype.update = function() {
         if (avoidAngle !== 0) return;
         // Calculate the distance between me and the other enemy
         var distance = game.math.distance(this.x, this.y, m.x, m.y);
-
         // If the enemy is too close...
         if (distance < this.AVOID_DISTANCE) {
             // Chose an avoidance angle of 90 or -90 (in radians)
             avoidAngle = Math.PI/2; // zig
-            if (game.math.chanceRoll(50)) avoidAngle *= -1; // zag
+            if (chanceRoll(50)) avoidAngle *= -1; // zag
         }
-    });
+    }, this);
     // Add the avoidance angle to steer clear of other enemies
     targetAngle += avoidAngle;
+    // Add our "wobble" factor to the targetAngle to make the enemy wobble
+    // Remember that this.wobble is tweening (above)
+    this.rotation = this.game.math.degToRad(this.wobble);
     // Gradually (this.TURN_RATE) aim the enemy towards the target angle
-    if (this.rotation !== targetAngle) {
-        // Calculate difference between the current angle and targetAngle
-        var delta = targetAngle - this.rotation;
-        // Keep it in range from -180 to 180 to make the most efficient turns.
-        if (delta > Math.PI) delta -= Math.PI * 2;
-        if (delta < -Math.PI) delta += Math.PI * 2;
-        if (delta > 0) {
-            // Turn clockwise
-            this.angle += this.TURN_RATE;
-        } else {
-            // Turn counter-clockwise
-            this.angle -= this.TURN_RATE;
-        }
-        // Just set angle to target angle if they are close
-        if (Math.abs(delta) < this.game.math.degToRad(this.TURN_RATE)) {
-            this.rotation = targetAngle;
-        }
-    }
+    // if (this.rotation !== targetAngle) {
+    //     // console.log(this.angle);
+    //     // Calculate difference between the current angle and targetAngle
+    //     var delta = targetAngle - this.rotation;
+    //     // console.log("target angle: "+targetAngle);
+    //     // console.log("delta: "+delta);
+    //     // Keep it in range from -180 to 180 to make the most efficient turns.
+    //     // if (delta > Math.PI) delta -= Math.PI * 2;
+    //     // if (delta < -Math.PI) delta += Math.PI * 2;
+    //     if (delta > 0) {
+    //         // Turn clockwise
+    //         this.angle += this.TURN_RATE;
+    //     } else {
+    //         // Turn counter-clockwise
+    //         this.angle -= this.TURN_RATE;
+    //     }
+    //     // Just set angle to target angle if they are close
+    //     if (Math.abs(delta) < this.game.math.degToRad(this.TURN_RATE)) {
+    //         this.rotation = targetAngle;
+    //     }
+    // }
     // Calculate velocity vector based on this.rotation and this.SPEED
-    this.body.velocity.x = Math.cos(this.rotation) * this.SPEED;
-    this.body.velocity.y = Math.sin(this.rotation) * this.SPEED;
+    this.body.velocity.x = Math.cos(targetAngle) * this.SPEED;
+    this.body.velocity.y = Math.sin(targetAngle) * this.SPEED;
 };
 
 // Try to get a used explosion from the explosionGroup.
@@ -337,6 +353,11 @@ function getExplosion(x, y) {
     // Return the explosion itself in case we want to do anything else with it
     return explosion;
 };
+
+function chanceRoll (chance) {
+    if (chance === undefined) { chance = 50; }
+    return chance > 0 && (Math.random() * 100 <= chance);
+}
 
 function formatTime(s) {
         // Convert seconds (s) to a nicely formatted and padded time string
