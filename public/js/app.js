@@ -26,10 +26,16 @@
                 controllerAs: "SplashViewModel"
             })
             .state("Menu", {
-                url: "/",
+                url: "/menu",
                 templateUrl: "/assets/js/states/menu.html",
                 controller: "MenuController",
                 controllerAs: "MenuViewModel"
+            })
+            .state("Signup", {
+                url: "/signup",
+                templateUrl: "/assets/js/states/signup.html",
+                controller: "SignupController",
+                controllerAs: "SignupViewModel"
             })
             .state("Play", {
                 url: "/play",
