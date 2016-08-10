@@ -1,114 +1,251 @@
-@import 'https://fonts.googleapis.com/css?family=Cinzel:900';
-
-/*canvas {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    background: transparent;
-}
-#background {
-    z-index: -2;
+@import 'https://fonts.googleapis.com/css?family=Arbutus|Cinzel:900|Emblema+One|Nosifer|UnifrakturCook:700';
+/*
+font-family: 'Nosifer', cursive;
+font-family: 'UnifrakturCook', cursive;
+font-family: 'Cinzel', serif;
+font-family: 'Emblema One', cursive;
+font-family: 'Arbutus', cursive;
+*/
+html {
     height: 100%;
-    width: 100%;
 }
-#main {
-    z-index: -1;
-    height: 100%;
-    width: 100%;
-}
-#ship {
-    z-index: 0;
-    height: 100%;
-    width: 100%;
-}*/
 body {
-    /*background: url("/assets/images/whitehouse.png") no-repeat center center fixed;
-    background-size: cover;*/
-    /*animation: backgroundScroll 10s linear infinite;*/
+    height: 100%;
+    margin: 0;
+    position: relative;
+}
+/*.angularPage {
+    height: 100%;
+    margin: 0;
+}
+.splashSection {
+    min-height: 100%;
+    margin: 0 auto;
+    background: url("/assets/images/background1.jpg") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Cinzel', serif;
     color: black;
-    font-family: 'Cinzel', sans-serif;
-}
-/*@keyframes backgroundScroll {
-    from {background-position: 0 0;}
-    to {background-position: 0 400px;}
-}*/
-
-.splash {
     text-align: center;
+    animation-delay: 0s;
+}*/
+ /*when hiding the picture*/
+/*.ng-hide-add {
+    animation: 1s fade_out ease;
+    animation-delay: 1s;
+}*/
+ /*when showing the picture*/
+/*.ng-hide-remove {
+    animation: 1s fade_in ease;
+    animation-delay: 1s;
+}*/
+.angularPage {
+    min-height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    position: absolute;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Cinzel', serif;
+    color: black;
+    text-align: center;
+    animation-delay: 0s;
+    z-index: -99;
+}
+.splash {
+    background: url("/assets/images/background1.jpg") no-repeat center center fixed;
+}
+.splashTitle {
     font-size: 7em;
-    border: .1em solid black;
-    left: 35%;
-    width: 3.6em;
+    margin-right: 3em;
+}
+.splashStory {
+    color: white;
+    font-size: 1.5em;
+}
+.splashMenu {
+    margin-top: 2em;
+    height: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.splashMenuButton {
+    color: white;
+    font-size: 3em;
+    border: 0.25em solid white;
+    padding: 0.5em;
+}
+.fade-in {
+    opacity: 0;  /* make things invisible upon start */
+    animation: fade_in ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    animation-fill-mode: forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    animation-duration: 2s;
+}
+.to-red {
+    animation: text_to_red ease-in 1;
+    animation-fill-mode: forwards;
+    animation-duration: 2s;
+}
+/*.splashTitle.fade-in {
+    animation-delay: 0s;
+}
+.storyOne.fade-in {
+    animation-delay: 2.5s;
+}
+.storyTwo.fade-in {
+    animation-delay: 5s;
+}
+.storyThree.fade-in {
+    animation-delay: 7.5s;
+}
+.storyFour.fade-in {
+    animation-delay: 8.5s;
+}
+.storyFive.fade-in {
+    animation-delay: 9.5s;
+}
+.splashMenu.fade-in {
+    animation-delay: 11.5s;
+}
+.storyRedOne {
+    animation-delay: 4s;
+}
+.storyRedTwo {
+    animation-delay: 6.5s;
+}*/
+.storyRedThree {
+    color: #af111c;
+}
+.signup {
+    background: url("/assets/images/background4.jpg") no-repeat center center fixed;
+}
+.signupBack {
     position: absolute;
-    top: 35%;
-}
-.main {
-    height: 100%;
-    width: 100%;
-}
-.screen {
-    height: 100%;
-    width: 100%;
+    height: 4em;
+    top: 1em;
+    left: 1em;
 }
 
-.ship1 {
-    height: 3em;
-    width: auto;
-    z-index: 2;
-    visibility: hidden;
-}
-
-.bee {
-    height: 3em;
-    width: auto;
-    z-index: 2;
-    visibility: hidden;
-}
-
-.player1 {
+[data-ui-view].ng-enter, [data-ui-view].ng-leave {
     position: absolute;
-    top: 100px;
-    left: 100px;
+    left: 0;
+    right: 0;
+    transition: all 1.5s ease-in-out;
+}
+[data-ui-view].ng-enter {
+    opacity: 0;
+
+}
+[data-ui-view].ng-enter-active {
+    opacity: 1;
+}
+[data-ui-view].ng-leave {
+    opacity: 1;
+}
+[data-ui-view].ng-leave-active {
+    opacity: 0;
+    transform: translateX(-100%);
 }
 
-.player2 {
-    position: absolute;
-    top: 100px;
-    left: 400px;
+/* ANIMATIONS
+============================================================================= */
+
+/* leaving animations ----------------------------------------- */
+/* rotate and fall */
+@keyframes rotateFall {
+  0%      { transform: rotateZ(0deg); }
+  20%     { transform: rotateZ(10deg); animation-timing-function: ease-out; }
+  40%     { transform: rotateZ(17deg); }
+  60%     { transform: rotateZ(16deg); }
+  100%    { transform: translateY(100%) rotateZ(17deg); }
 }
 
-.bullet {
-    height: .4em;
-    width: .4em;
-    background-color: white;
-    border-radius: 50px;
-    position: absolute;
-    z-index: 5;
+/* slide in from the bottom */
+@keyframes slideOutLeft {
+  to      { transform: translateX(-100%); }
 }
-.score {
-	position: absolute;
-	top: 5px;
-	left: 480px;
-	color: #FF7F00;
-	font-family: Helvetica, sans-serif;
-	cursor: default;
+
+/* rotate out newspaper */
+@keyframes rotateOutNewspaper {
+  to      { transform: translateZ(-3000px) rotateZ(360deg); opacity: 0; }
 }
-.game-over {
-	position: absolute;
-	top: 100px;
-	left: 210px;
-	color: #FF7F00;
-	font-family: Helvetica, sans-serif;
-	font-size: 30px;
-	cursor: default;
-	display: none;
+
+/* fade out to left */
+@keyframes fade_out_to_left {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
 }
-.game-over span {
-	font-size: 20px;
-	cursor: pointer;
-	position: relative;
-	left: 50px;
+
+/* entering animations --------------------------------------- */
+/* scale up */
+@keyframes scaleUp {
+  from    { opacity: 0.3; -webkit-transform: scale(0.8); }
 }
-.game-over span:hover {
-	color: #FFD700;
+
+/* slide in from the right */
+@keyframes slideInRight {
+  from    { transform: translateX(100%); }
+  to      { transform: translateX(0); }
 }
+
+/* slide in from the bottom */
+@keyframes slideInUp {
+  from    { transform: translateY(100%); }
+  to      { transform: translateY(0); }
+}
+
+/* fade in from right */
+@keyframes fade_in_from_right {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* other animations --------------------------------------- */
+/* fade out element */
+@keyframes fade_out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+/* fade in element */
+@keyframes fade_in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+/* turn text blood red */
+@keyframes text_to_red {
+    to {
+        color: #af111c;
+    }
+}
+
+/*...
+
+  [data-ui-view].ng-enter           { animation: fade_in_from_right 10s both ease-in; z-index: 8888; opacity: 0;}
+  [data-ui-view].ng-enter-active    { opacity: 1;}
+  [data-ui-view].ng-leave           { animation: fade_out_to_left 1s both ease-in; z-index: 9999; opacity: 0;}
+  [data-ui-view].ng-leave-active    { opacity: 1;}
+
+...*/

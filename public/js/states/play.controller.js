@@ -4,19 +4,12 @@
     angular
         .module("zombiedefense")
         .controller("PlayController", [
-            "$scope",
-            // "$ocLazyLoad",
-            "$injector",
             PlayControllerFunction
         ])
 
-    function PlayControllerFunction($scope, $injector) {
+    function PlayControllerFunction() {
         var vm = this;
-        // $ocLazyLoad.load(['game.js'])
-        //        .then(function() {
-        //            // Inject the loaded module
-        //            var gameFile = $injector.get('game');
-        //        });
+        vm.pageClass = "play";
 
         window.game = new Phaser.Game(800, 600, Phaser.AUTO, '');
 

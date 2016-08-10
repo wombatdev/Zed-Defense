@@ -1,9 +1,16 @@
 var express = require("express");
 var app = express();
-var parser = require("body-parser");
-var hbs = require("express-handlebars");
+var session = require('express-session');
+var mongoose = require('./db/connection');
+var cmongo  = require("connect-mongo");
+var MongoSession = cmongo(session);
+var passport = require('passport');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
+
+var User = mongoose.model("User");
 
 app.set("port", process.env.PORT || 3001);
 
@@ -16,9 +23,19 @@ app.set("port", process.env.PORT || 3001);
 // }));
 
 app.use("/assets", express.static("public"));
-app.use(parser.json({
+app.use(bodyParser.json({
     extended: true
 }));
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 app.get('/*', function(req, res) {
     res.sendFile(__dirname + '/index.html');
@@ -45,9 +62,6 @@ io.on('connection', function(socket) {
     });
     // console.log(socket);
     console.log(socket.client.conn.id+" has joined");
-    // socket.on('playerCountRequest', function(msg) {
-    //     io.emit('playerCount', currentPlayers.length);
-    // });
     socket.on('disconnect', function() {
         console.log(socket.client.conn.id+" has left");
         for (var i = currentPlayers.length -1 ; i >= 0; i--) {
@@ -79,11 +93,21 @@ io.on('connection', function(socket) {
         var incomingMsg = JSON.parse(msg);
         io.emit('spawnZombieInput', JSON.stringify(incomingMsg));
     });
+    socket.on('playerMovingOutput', function(msg) {
+        var direction = msg;
+        var player = socket.client.conn.id;
+        var response = ({
+            player: player,
+            direction: direction
+        });
+        socket.broadcast.emit('playerMovingInput', JSON.stringify(response));
+    });
 });
 
-
-// });
-
-http.listen(process.env.PORT || 3001, function() {
+mongoose.connect(process.env.MONGODB_URI, function (error) {
+    if (error) console.error(error);
+    else console.log('mongo connected');
+    http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
+    });
 });

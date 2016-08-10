@@ -1,7 +1,7 @@
 var playState = {
     create: function() {
         // Define world size
-        game.world.setBounds(0, 0, 1600, 600);
+        game.world.setBounds(0, 0, 2400, 600);
         // Define cursor keys
         game.cursors = game.input.keyboard.createCursorKeys();
         this.bmd = this.add.bitmapData(this.game.width, this.game.height);
@@ -11,6 +11,15 @@ var playState = {
         game.BULLET_SPEED = 500; // pixels/second
         game.NUMBER_OF_BULLETS = 6; // six bullets at a time
     	game.MAX_ZOMBIES = 4; // number of zombies
+        // Add warning arrows
+        game.leftarrow = this.game.add.image(0, 0, 'leftarrow');
+        game.leftarrow.fixedToCamera = true;
+        game.leftarrow.cameraOffset.set(20, 197);
+        game.leftarrow.visible = false;
+        game.rightarrow = this.game.add.image(0, 0, 'rightarrow');
+        game.rightarrow.fixedToCamera = true;
+        game.rightarrow.cameraOffset.set(662, 197);
+        game.rightarrow.visible = false;
     	// Create a group to hold the enemies
         game.enemyGroup = game.add.group();
         // Create an object pool of bullets fired by other players
@@ -46,12 +55,14 @@ var playState = {
 
     	// Create an object representing our gun
     	game.gun = game.add.sprite(0, 0, 'pistol');
-    	game.gun.x = (game.width/2-game.gun.width/2);
-    	game.gun.y = (game.height+game.gun.height/5);
+    	game.gun.x = (game.world.width/2-game.gun.width/2);
+    	game.gun.y = (game.world.height+game.gun.height/5);
     	// Set the pivot point to the center of the gun
     	game.gun.anchor.setTo(0.5, 1.0);
         // Set the camera to follow the player
         game.camera.follow(game.gun);
+        // Set a "deadzone" so camera scrolls before the player reaches the end
+        game.camera.deadzone = new Phaser.Rectangle(100, 500, 400, 100);
         // Create an object pool of other players' guns
     	game.otherPlayersGuns = game.add.group();
         // Create objects representing guns for other players
@@ -78,7 +89,6 @@ var playState = {
                 }
             }
         }, this);
-
         // Simulate a pointer click/tap input at the center of the stage
         // when the example begins running (to center the sprite).
         game.input.activePointer.x = game.width/2;
@@ -93,15 +103,27 @@ var playState = {
             var incomingMsg = JSON.parse(msg);
             spawnZombie(incomingMsg.x, incomingMsg.y);
         });
+        game.socket.on('playerMovingInput', function(msg) {
+            var incomingMsg = JSON.parse(msg);
+            var gunIndex = game.otherPlayersInGame.findIndex(x=> x.uid === incomingMsg.player);
+            if (incomingMsg.direction == "left") {
+                game.otherPlayersGuns.children[gunIndex].x -= 30;
+            }
+            else {
+                game.otherPlayersGuns.children[gunIndex].x += 30;
+            }
+        });
     },
 
     update: function() {
         // Move the player on left/right
         if (game.cursors.left.isDown) {
-            game.gun.x -= 10;
+            game.gun.x -= 30;
+            game.socket.emit('playerMovingOutput', "left");
         }
         else if (game.cursors.right.isDown) {
-            game.gun.x += 10;
+            game.gun.x += 30;
+            game.socket.emit('playerMovingOutput', "right");
         }
         // Set the world to wrap 360 degrees!
         game.world.wrap(game.gun, 0, true, true, false);
@@ -132,10 +154,26 @@ var playState = {
     	// If there are fewer than MAX_ENEMIES, launch a new one
         if (game.enemyGroup.countLiving() < game.MAX_ZOMBIES) {
             // Send the socket notice that an enemy should spawn
-            game.socket.emit('spawnZombieOutput', JSON.stringify({x: game.rnd.integerInRange(50, game.width-50), y: game.height*0.4}));
+            game.socket.emit('spawnZombieOutput', JSON.stringify({x: game.rnd.integerInRange(200, game.world.width-200), y: game.rnd.integerInRange(game.height*0.4, game.height*0.6)}));
         }
     	// If any enemy reaches the player, the player dies
         game.enemyGroup.forEachAlive(function(enemy) {
+            // Alert the player if a zombie is off-screen
+            if (enemy.body.x < game.camera.x-enemy.width/2) {
+                game.leftarrow.visible = true;
+                return;
+            }
+            else {
+                game.leftarrow.visible = false;
+            }
+            if (enemy.body.x > game.camera.x+enemy.width/2) {
+                game.rightarrow.visible = true;
+                return;
+            }
+            else {
+                game.rightarrow.visible = false;
+            }
+            // If a zombie reaches the bottom of the screen, everyone dies
             if (enemy.y > this.game.height - enemy.height*0.25) {
                 game.timer.stop();
                 game.state.start('lose');
@@ -190,13 +228,14 @@ var playState = {
             game.debug.text("Done!", 2, 14, "#0f0");
         }
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
-        game.debug.text(game.enemyGroup.total || '--', 2, 42, "#00ff00");
-        game.debug.cameraInfo(game.camera, 32, 32);
+        game.debug.text("Players: "+(game.otherPlayersInGame.length+1) || '--', 2, 42, "#00ff00");
+        game.debug.text("Enemies: "+game.enemyGroup.total || '--', 2, 56, "#00ff00");
+        game.debug.cameraInfo(game.camera, 2, 70);
         // var pixelHeightDebug = 56;
         // game.enemyGroup.forEachAlive(function(enemy) {
         //     // game.debug.body(enemy);
-        //     game.debug.text(enemy.scale, 2, pixelHeightDebug, "#00ff00");
-        //     pixelHeightDebug += 14;
+        //     // game.debug.text(enemy.scale, 2, pixelHeightDebug, "#00ff00");
+        //     // pixelHeightDebug += 14;
         // }, this);
     }
 }

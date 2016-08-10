@@ -1,5 +1,1 @@
-Set fire to mouse click
-Determine direction of fire from x,y of click
-
-Fix background scrolling
-Update zombie movement
+enable skipping splash animations
