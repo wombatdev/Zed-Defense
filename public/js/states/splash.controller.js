@@ -8,8 +8,9 @@
             SplashControllerFunction
         ])
 
-    function SplashControllerFunction() {
+    function SplashControllerFunction($scope) {
         var vm = this;
+        $scope.pageClass = "splash";
         // vm.lions = false;
         // vm.cranes = false;
         // setTimeout(function() {

@@ -4,13 +4,12 @@
     angular
         .module("zombiedefense")
         .controller("SigninController", [
-            "$scope",
             SigninControllerFunction
         ])
 
-    function SigninControllerFunction($scope) {
-
+    function SigninControllerFunction() {
         var vm = this;
+        vm.pageClass = "signin";
     }
 
 })();

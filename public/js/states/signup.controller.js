@@ -9,8 +9,8 @@
         ])
 
     function SignupControllerFunction($scope) {
-
         var vm = this;
+        $scope.pageClass = "signup";
     }
 
 })();

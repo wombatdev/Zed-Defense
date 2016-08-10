@@ -1,12 +1,20 @@
-@import 'https://fonts.googleapis.com/css?family=Cinzel:900';
+@import 'https://fonts.googleapis.com/css?family=Arbutus|Cinzel:900|Emblema+One|Nosifer|UnifrakturCook:700';
+/*
+font-family: 'Nosifer', cursive;
+font-family: 'UnifrakturCook', cursive;
+font-family: 'Cinzel', serif;
+font-family: 'Emblema One', cursive;
+font-family: 'Arbutus', cursive;
+*/
 html {
     height: 100%;
 }
 body {
     height: 100%;
     margin: 0;
+    position: relative;
 }
-.angularBody {
+/*.angularPage {
     height: 100%;
     margin: 0;
 }
@@ -18,10 +26,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: "Cinzel", sans-serif;
+    font-family: 'Cinzel', serif;
     color: black;
     text-align: center;
-}
+    animation-delay: 0s;
+}*/
  /*when hiding the picture*/
 /*.ng-hide-add {
     animation: 1s fade_out ease;
@@ -32,16 +41,33 @@ body {
     animation: 1s fade_in ease;
     animation-delay: 1s;
 }*/
+.angularPage {
+    min-height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    position: absolute;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Cinzel', serif;
+    color: black;
+    text-align: center;
+    animation-delay: 0s;
+}
+.splash {
+    background: url("/assets/images/background1.jpg") no-repeat center center fixed;
+}
 .splashTitle {
     font-size: 7em;
     margin-right: 3em;
 }
 .splashStory {
     color: white;
-    font-size: 1em;
+    font-size: 1.5em;
 }
 .splashMenu {
-    margin-top: 5em;
+    margin-top: 2em;
     height: 20em;
     display: flex;
     flex-direction: column;
@@ -59,7 +85,12 @@ body {
     animation-fill-mode: forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
     animation-duration: 2s;
 }
-.splashTitle.fade-in {
+.to-red {
+    animation: text_to_red ease-in 1;
+    animation-fill-mode: forwards;
+    animation-duration: 2s;
+}
+/*.splashTitle.fade-in {
     animation-delay: 0s;
 }
 .storyOne.fade-in {
@@ -78,8 +109,113 @@ body {
     animation-delay: 9.5s;
 }
 .splashMenu.fade-in {
-    animation-delay: 10s;
+    animation-delay: 11.5s;
 }
+.storyRedOne {
+    animation-delay: 4s;
+}
+.storyRedTwo {
+    animation-delay: 6.5s;
+}*/
+.storyRedThree {
+    color: #af111c;
+}
+.signup {
+    background: url("/assets/images/background4.jpg") no-repeat center center fixed;
+}
+.signupBack {
+    position: absolute;
+    height: 4em;
+    top: 1em;
+    left: 1em;
+}
+
+[data-ui-view].ng-enter, [data-ui-view].ng-leave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transition: all 1.5s ease-in-out;
+}
+[data-ui-view].ng-enter {
+    opacity: 0;
+
+}
+[data-ui-view].ng-enter-active {
+    opacity: 1;
+}
+[data-ui-view].ng-leave {
+    opacity: 1;
+}
+[data-ui-view].ng-leave-active {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* ANIMATIONS
+============================================================================= */
+
+/* leaving animations ----------------------------------------- */
+/* rotate and fall */
+@keyframes rotateFall {
+  0%      { transform: rotateZ(0deg); }
+  20%     { transform: rotateZ(10deg); animation-timing-function: ease-out; }
+  40%     { transform: rotateZ(17deg); }
+  60%     { transform: rotateZ(16deg); }
+  100%    { transform: translateY(100%) rotateZ(17deg); }
+}
+
+/* slide in from the bottom */
+@keyframes slideOutLeft {
+  to      { transform: translateX(-100%); }
+}
+
+/* rotate out newspaper */
+@keyframes rotateOutNewspaper {
+  to      { transform: translateZ(-3000px) rotateZ(360deg); opacity: 0; }
+}
+
+/* fade out to left */
+@keyframes fade_out_to_left {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+/* entering animations --------------------------------------- */
+/* scale up */
+@keyframes scaleUp {
+  from    { opacity: 0.3; -webkit-transform: scale(0.8); }
+}
+
+/* slide in from the right */
+@keyframes slideInRight {
+  from    { transform: translateX(100%); }
+  to      { transform: translateX(0); }
+}
+
+/* slide in from the bottom */
+@keyframes slideInUp {
+  from    { transform: translateY(100%); }
+  to      { transform: translateY(0); }
+}
+
+/* fade in from right */
+@keyframes fade_in_from_right {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* other animations --------------------------------------- */
+/* fade out element */
 @keyframes fade_out {
     from {
         opacity: 1;
@@ -88,6 +224,7 @@ body {
         opacity: 0;
     }
 }
+/* fade in element */
 @keyframes fade_in {
     from {
         opacity: 0;
@@ -96,3 +233,18 @@ body {
         opacity: 1;
     }
 }
+/* turn text blood red */
+@keyframes text_to_red {
+    to {
+        color: #af111c;
+    }
+}
+
+/*...
+
+  [data-ui-view].ng-enter           { animation: fade_in_from_right 10s both ease-in; z-index: 8888; opacity: 0;}
+  [data-ui-view].ng-enter-active    { opacity: 1;}
+  [data-ui-view].ng-leave           { animation: fade_out_to_left 1s both ease-in; z-index: 9999; opacity: 0;}
+  [data-ui-view].ng-leave-active    { opacity: 1;}
+
+...*/
