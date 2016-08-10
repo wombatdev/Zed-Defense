@@ -7,10 +7,10 @@
             PlayControllerFunction
         ])
 
-    function PlayControllerFunction($scope, $injector) {
+    function PlayControllerFunction() {
         var vm = this;
         vm.pageClass = "play";
-        
+
         window.game = new Phaser.Game(800, 600, Phaser.AUTO, '');
 
         game.state.add('boot', bootState);

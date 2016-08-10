@@ -89,7 +89,6 @@ var playState = {
                 }
             }
         }, this);
-        console.log(game.otherPlayersGuns);
         // Simulate a pointer click/tap input at the center of the stage
         // when the example begins running (to center the sprite).
         game.input.activePointer.x = game.width/2;

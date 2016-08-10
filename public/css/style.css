@@ -54,6 +54,7 @@ body {
     color: black;
     text-align: center;
     animation-delay: 0s;
+    z-index: -99;
 }
 .splash {
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;

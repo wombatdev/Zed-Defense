@@ -64,4 +64,16 @@ module.exports = function(passport) {
       return callback(null, user);
     });
   }));
+
+  passport.use('facebook-login', new FacebookStrategy({
+    clientID: 1738032826451393,
+    clientSecret: "38fe4507c58c9aff928331f80b4c3a15",
+    callbackURL: "http://localhost:3001/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
 };
