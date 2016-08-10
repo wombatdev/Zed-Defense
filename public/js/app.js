@@ -49,7 +49,7 @@
                 controller: "PlayController",
                 controllerAs: "PlayViewModel"
             })
-        $urlRouterProvider.otherwise("/")
+        // $urlRouterProvider.otherwise("/")
     }
 
 })();

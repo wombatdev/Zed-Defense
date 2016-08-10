@@ -5,23 +5,11 @@ var User = mongoose.model("User");
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var passport = require('passport');
-var Strategy = require('passport-facebook').Strategy;
+var config = require('./oauth.js');
+var FacebookStrategy = require('passport-facebook').Strategy;
 
-passport.use(new Strategy({
-        clientID: "1738032826451393",
-        clientSecret: "38fe4507c58c9aff928331f80b4c3a15",
-        callbackURL: 'http://gentle-retreat-53311.herokuapp.com/callback.html'
-    },
-    function(accessToken, refreshToken, profile, cb) {
-        // In this example, the user's Facebook profile is supplied as the user
-        // record.  In a production-quality application, the Facebook profile should
-        // be associated with a user record in the application's database, which
-        // allows for account linking and authentication with other identity
-        // providers.
-        return cb(null, profile);
-    }
-));
 
+// serialize and deserialize
 passport.serializeUser(function(user, cb) {
     cb(null, user);
 });
@@ -29,6 +17,25 @@ passport.serializeUser(function(user, cb) {
 passport.deserializeUser(function(obj, cb) {
     cb(null, obj);
 });
+
+
+passport.use(new FacebookStrategy({
+        clientID: config.facebook.clientID,
+        clientSecret: config.facebook.clientSecret,
+        callbackURL: config.facebook.callbackURL
+    },
+    function(accessToken, refreshToken, profile, done) {
+        // In this example, the user's Facebook profile is supplied as the user
+        // record.  In a production-quality application, the Facebook profile should
+        // be associated with a user record in the application's database, which
+        // allows for account linking and authentication with other identity
+        // providers.
+        process.nextTick(function () {
+            return done(null, profile);
+        });
+    }
+));
+
 
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
@@ -46,15 +53,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.get('/signup',
-    passport.authenticate('facebook'));
+app.get('/signup/facebook',
+    passport.authenticate('facebook'),
+    function(req, res){});
 
 app.get('callback.html',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    passport.authenticate('facebook', { failureRedirect: 'www.yahoo.com' }),
     function(req, res) {
         console.log(res);
         // Successful authentication, redirect home.
-        res.redirect('/');
+        res.redirect('www.google.com');
     });
 
 app.get('/*', function(req, res) {
@@ -130,3 +138,9 @@ app.set("port", process.env.PORT || 3001);
 http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
 });
+
+// test authentication
+// function ensureAuthenticated(req, res, next) {
+//     if (req.isAuthenticated()) { return next(); }
+//         res.redirect('/');
+// }
