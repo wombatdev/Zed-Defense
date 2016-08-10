@@ -54,7 +54,7 @@ body {
     color: black;
     text-align: center;
     animation-delay: 0s;
-    /*z-index: -99;*/
+    /*z-index: -1;*/
 }
 .splash {
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;
@@ -130,7 +130,9 @@ body {
     top: 1em;
     left: 1em;
 }
-
+.play {
+    /*z-index: 99;*/
+}
 [data-ui-view].ng-enter, [data-ui-view].ng-leave {
     position: absolute;
     left: 0;
