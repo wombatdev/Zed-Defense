@@ -20,6 +20,7 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.14.0",
     "mongoose": "^4.5.8",
+    "morgan": "^1.7.0",
     "node-sass": "^3.8.0",
     "oclazyload": "^1.0.9",
     "passport": "^0.3.2",

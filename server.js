@@ -1,45 +1,65 @@
 var express = require("express");
 var app = express();
-var session = require('express-session');
-var mongoose = require('./db/connection');
-var cmongo  = require("connect-mongo");
-var MongoSession = cmongo(session);
-var passport = require('passport');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var mongoose = require('./db/connection.js');
+var User = mongoose.model("User");
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
+// var passport = require('passport');
+// var Strategy = require('passport-facebook').Strategy;
 
-var User = mongoose.model("User");
+// passport.use(new Strategy({
+//         clientID: "1738032826451393",
+//         clientSecret: "38fe4507c58c9aff928331f80b4c3a15",
+//         callbackURL: 'http://localhost:3001/callback.html'
+//     },
+//     function(accessToken, refreshToken, profile, cb) {
+//         // In this example, the user's Facebook profile is supplied as the user
+//         // record.  In a production-quality application, the Facebook profile should
+//         // be associated with a user record in the application's database, which
+//         // allows for account linking and authentication with other identity
+//         // providers.
+//         return cb(null, profile);
+//     }
+// ));
+//
+// passport.serializeUser(function(user, cb) {
+//     cb(null, user);
+// });
+//
+// passport.deserializeUser(function(obj, cb) {
+//     cb(null, obj);
+// });
 
-app.set("port", process.env.PORT || 3001);
-
-// app.set("view engine", "hbs");
-// app.engine(".hbs", hbs({
-//     extname: ".hbs",
-//     partialsDir: "views/",
-//     layoutsDir: "views/",
-//     defaultLayout: "layout-main"
-// }));
-
+// Use application-level middleware for common functionality, including
+// logging, parsing, and session handling.
 app.use("/assets", express.static("public"));
-app.use(bodyParser.json({
-    extended: true
-}));
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').json({ extended: true }));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+// var cmongo  = require("connect-mongo");
+// var MongoSession = cmongo(session);
 
-app.get('/auth/facebook',
-  passport.authenticate('facebook'));
-
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
+// Initialize Passport and restore authentication state, if any, from the
+// session.
+// app.use(passport.initialize());
+// app.use(passport.session());
+//
+//
+// app.get('/signup',
+//     passport.authenticate('facebook'));
+//
+// app.get('/auth/facebook/callback',
+//     passport.authenticate('facebook', { failureRedirect: '/login' }),
+//     function(req, res) {
+//         // Successful authentication, redirect home.
+//         res.redirect('/');
+//     });
 
 app.get('/*', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+
 
 var randomString = function(length) {
     var text = "";
@@ -104,10 +124,8 @@ io.on('connection', function(socket) {
     });
 });
 
-mongoose.connect(process.env.MONGODB_URI, function (error) {
-    if (error) console.error(error);
-    else console.log('mongo connected');
-    http.listen(process.env.PORT || 3001, function() {
+app.set("port", process.env.PORT || 3001);
+
+http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
-    });
 });
