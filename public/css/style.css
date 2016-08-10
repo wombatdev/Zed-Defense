@@ -1,8 +1,9 @@
 @import 'https://fonts.googleapis.com/css?family=Cinzel:900';
 html {
-    /*height: 100%;*/
+    height: 100%;
 }
 body {
+    height: 100%;
     margin: 0;
 }
 .angularBody {
@@ -10,7 +11,7 @@ body {
     margin: 0;
 }
 .splashSection {
-    height: 100vh;
+    min-height: 100%;
     margin: 0 auto;
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;
     background-size: cover;
@@ -20,30 +21,78 @@ body {
     font-family: "Cinzel", sans-serif;
     color: black;
     text-align: center;
-    /*justify-content: center;*/
 }
+ /*when hiding the picture*/
+/*.ng-hide-add {
+    animation: 1s fade_out ease;
+    animation-delay: 1s;
+}*/
+ /*when showing the picture*/
+/*.ng-hide-remove {
+    animation: 1s fade_in ease;
+    animation-delay: 1s;
+}*/
 .splashTitle {
     font-size: 7em;
     margin-right: 3em;
-    /*margin-bottom: 8em;*/
-    /*border: .1em solid black;*/
-    /*padding: .1em;*/
+}
+.splashStory {
+    color: white;
+    font-size: 1em;
 }
 .splashMenu {
-    /*border: 0.7em solid black;*/
-    margin-top: 10em;
+    margin-top: 5em;
     height: 20em;
-    /*padding: 4em 2em;*/
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-/*.splashMenu:first-child {
-    margin-bottom: 3em;
-}*/
 .splashMenuButton {
     color: white;
     font-size: 3em;
     border: 0.25em solid white;
     padding: 0.5em;
+}
+.fade-in {
+    opacity: 0;  /* make things invisible upon start */
+    animation: fade_in ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    animation-fill-mode: forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    animation-duration: 2s;
+}
+.splashTitle.fade-in {
+    animation-delay: 0s;
+}
+.storyOne.fade-in {
+    animation-delay: 2.5s;
+}
+.storyTwo.fade-in {
+    animation-delay: 5s;
+}
+.storyThree.fade-in {
+    animation-delay: 7.5s;
+}
+.storyFour.fade-in {
+    animation-delay: 8.5s;
+}
+.storyFive.fade-in {
+    animation-delay: 9.5s;
+}
+.splashMenu.fade-in {
+    animation-delay: 10s;
+}
+@keyframes fade_out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes fade_in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

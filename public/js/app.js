@@ -5,8 +5,8 @@
     angular
         .module("zombiedefense", [
             "ngResource",
-            "ui.router"
-            // "ngAnimate",
+            "ui.router",
+            "ngAnimate"
             // "oc.lazyLoad"
         ])
         .config([
