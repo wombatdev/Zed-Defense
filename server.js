@@ -235,5 +235,5 @@ http.listen(process.env.PORT || 3001, function() {
 // test authentication
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-        res.redirect('/signup');
+        res.redirect('/splash');
 }
