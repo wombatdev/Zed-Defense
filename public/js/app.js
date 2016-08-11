@@ -19,13 +19,13 @@
     function RouterFunction($stateProvider, $locationProvider, $urlRouterProvider) {
         $locationProvider.html5Mode(true)
         $stateProvider
-            .state("root", {
-                url: "/",
-                template: "",
-                // controller: function($state, user) {
-                //     if ($state.is("root")) $state.go(user.loggedIn ? "Menu" : "Splash");
-                // }
-            })
+            // .state("root", {
+            //     url: "/",
+            //     template: "",
+            //     // controller: function($state, user) {
+            //     //     if ($state.is("root")) $state.go(user.loggedIn ? "Menu" : "Splash");
+            //     // }
+            // })
             .state("Splash", {
                 url: "/splash",
                 templateUrl: "/assets/js/states/splash.html",
