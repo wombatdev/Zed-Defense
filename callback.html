@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>test</title>
-  <!-- <script>
+  <title>World of Zed</title>
+  <script>
     window.onload = function () {
       var hash = window.location.hash;
       if (window.location.search.substring(1).indexOf("error") !== -1) {
@@ -11,11 +11,11 @@
         console.log("error");
       } else if (hash) {
         // login success
-        var token = window.location.hash.split('&')[0].split('=')[1];
-        localStorage.setItem('spotify-token', token);
+        var profile = window.location.hash.split('&')[0].split('=')[1];
+        localStorage.setItem('profile-id', profile);
       }
     }
-  </script> -->
+  </script>
 </head>
 <body>
 

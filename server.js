@@ -41,10 +41,6 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
-
-
-
-
 // passport.use(new FacebookStrategy({
 //         clientID: config.facebook.clientID,
 //         clientSecret: config.facebook.clientSecret,
@@ -78,15 +74,11 @@ passport.deserializeUser(function(id, done) {
 //     }
 // ));
 
-
-
-
-
 app.get('/signup/facebook',
     passport.authenticate('facebook'),
     function(req, res){});
 
-app.get('callback.html',
+app.get('/signup/facebook/return',
     passport.authenticate('facebook', { failureRedirect: 'www.yahoo.com' }),
     function(req, res) {
         console.log(res);
