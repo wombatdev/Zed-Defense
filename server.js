@@ -64,9 +64,9 @@ app.get('/', ensureAuthenticated, function(req, res) {
     });
 });
 
-app.get('/*', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
+// app.get('/*', function(req, res) {
+//     res.sendFile(__dirname + '/index.html');
+// });
 // OLD CODEBASE ABOVE ############################################################
 
 // // dependencies
