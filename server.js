@@ -232,8 +232,8 @@ http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
 });
 
-// test authentication
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-        res.redirect('/');
-}
+// // test authentication
+// function ensureAuthenticated(req, res, next) {
+//     if (req.isAuthenticated()) { return next(); }
+//         res.redirect('/');
+// }
