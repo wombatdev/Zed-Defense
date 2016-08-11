@@ -79,11 +79,11 @@ app.get('/signup/facebook',
     function(req, res){});
 
 app.get('/signup/facebook/return',
-    passport.authenticate('facebook', { failureRedirect: 'www.yahoo.com' }),
+    passport.authenticate('facebook', { failureRedirect: '/' }),
     function(req, res) {
         console.log(res);
         // Successful authentication, redirect home.
-        res.redirect('www.google.com');
+        res.redirect('/');
     });
 
 app.get('/*', function(req, res) {
