@@ -53,10 +53,11 @@ app.get('/signup/facebook/return',
         res.redirect('/menu');
     });
 
-app.get('/', ensureAuthenticated, function(req, res) {
+app.get('/menu', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
+            res.redirect('/signup');
         } else {
             res.redirect('/menu', {
                 user: user
