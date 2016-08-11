@@ -19,6 +19,13 @@
     function RouterFunction($stateProvider, $locationProvider, $urlRouterProvider) {
         $locationProvider.html5Mode(true)
         $stateProvider
+            // .state("root", {
+            //     url: "/",
+            //     template: "",
+            //     // controller: function($state, user) {
+            //     //     if ($state.is("root")) $state.go(user.loggedIn ? "Menu" : "Splash");
+            //     // }
+            // })
             .state("Splash", {
                 url: "/",
                 templateUrl: "/assets/js/states/splash.html",
@@ -49,7 +56,7 @@
                 controller: "PlayController",
                 controllerAs: "PlayViewModel"
             })
-        // $urlRouterProvider.otherwise("/")
+        $urlRouterProvider.otherwise("/")
     }
 
 })();

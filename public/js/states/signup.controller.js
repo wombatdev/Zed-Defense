@@ -13,13 +13,13 @@
         var vm = this;
         $scope.pageClass = "signup";
 
-        vm.newUser = new UserFactory();
-
-        vm.create = function() {
-            vm.newUser.$save().then(function(res) {
-                console.log("saved!");
-            })
-        }
+        // vm.newUser = new UserFactory();
+        //
+        // vm.create = function() {
+        //     vm.newUser.$save().then(function(res) {
+        //         console.log("saved!");
+        //     })
+        // }
     }
 
 })();

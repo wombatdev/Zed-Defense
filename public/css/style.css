@@ -46,7 +46,6 @@ body {
     width: 100%;
     margin: 0 auto;
     position: absolute;
-    background-size: cover;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -58,6 +57,7 @@ body {
 }
 .splash {
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
 .splashTitle {
     font-size: 7em;
@@ -123,12 +123,17 @@ body {
 }
 .signup {
     background: url("/assets/images/background4.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
-.signupBack {
+.backButton {
     position: absolute;
     height: 4em;
     top: 1em;
     left: 1em;
+}
+.menu {
+    background: url("/assets/images/background5.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
 .play {
     /*z-index: 99;*/

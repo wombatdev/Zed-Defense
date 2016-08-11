@@ -4,12 +4,13 @@
     angular
         .module("zombiedefense")
         .controller("MenuController", [
+            "$scope",
             MenuControllerFunction
         ])
 
-    function MenuControllerFunction() {
+    function MenuControllerFunction($scope) {
         var vm = this;
-        vm.pageClass = "menu";
+        $scope.pageClass = "menu";
     }
 
 })();
