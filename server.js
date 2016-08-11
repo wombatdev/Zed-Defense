@@ -51,9 +51,13 @@ app.get('/signup/facebook/return',
     }),
     function(req, res) {
         console.log(res);
-        console.log("HELLOHELLOHELOOHELOO");
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         // console.log(res.route.oauthID);
         console.log(res.writable);
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        console.log(res.finish)
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        console.log(res.parser)
         // Successful authentication, redirect home.
         res.redirect('/');
     });

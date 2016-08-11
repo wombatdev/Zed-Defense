@@ -20,10 +20,8 @@ angular
     }
 
     function login(username, password) {
-
         // create a new instance of deferred
         var deferred = $q.defer();
-
         // send a post request to the server
         $http.post('/user/login', {
                 username: username,
@@ -44,7 +42,6 @@ angular
                 user = false;
                 deferred.reject();
             });
-
         // return promise object
         return deferred.promise;
 
