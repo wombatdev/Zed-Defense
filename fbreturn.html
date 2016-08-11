@@ -11,8 +11,8 @@
         console.log("error");
       } else if (hash) {
         // login success
-        var profile = window.location.hash.split('&')[0].split('=')[1];
-        localStorage.setItem('profile-id', profile);
+        var loginStatus = window.location.href.split('?')[1].split('&')[0].split('=')[1];
+        localStorage.setItem('login-status', loginStatus);
       }
     }
   </script>
