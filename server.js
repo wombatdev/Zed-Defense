@@ -50,29 +50,20 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        console.log(res);
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        // console.log(res.route.oauthID);
-        console.log(res.writable);
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        console.log(res.finish)
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        console.log(res.parser)
-        // Successful authentication, redirect home.
-        res.redirect('/');
+        res.redirect('/menu');
     });
 
-// app.get('/menu', ensureAuthenticated, function(req, res) {
-//     User.findById(req.session.passport.user, function(err, user) {
-//         if (err) {
-//             console.log(err); // handle errors
-//         } else {
-//             res.redirect('/menu', {
-//                 user: user
-//             });
-//         }
-//     });
-// });
+app.get('/', ensureAuthenticated, function(req, res) {
+    User.findById(req.session.passport.user, function(err, user) {
+        if (err) {
+            console.log(err); // handle errors
+        } else {
+            res.redirect('/menu', {
+                user: user
+            });
+        }
+    });
+});
 
 app.get('/*', function(req, res) {
     res.sendFile(__dirname + '/index.html');
@@ -235,7 +226,7 @@ http.listen(process.env.PORT || 3001, function() {
 });
 
 // test authentication
-// function ensureAuthenticated(req, res, next) {
-//     if (req.isAuthenticated()) { return next(); }
-//         res.redirect('/');
-// }
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) { return next(); }
+        res.redirect('/');
+}

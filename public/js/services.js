@@ -15,6 +15,23 @@ angular
     // create user variable
     var user = null;
 
+    // return available functions for use in the controllers
+    return ({
+      isLoggedIn: isLoggedIn,
+      getUserStatus: getUserStatus,
+      login: login,
+      logout: logout,
+      register: register
+    });
+
+    function isLoggedIn() {
+        if (user) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function getUserStatus() {
         return user;
     }
@@ -23,9 +40,7 @@ angular
         // create a new instance of deferred
         var deferred = $q.defer();
         // send a post request to the server
-        $http.post('/user/login', {
-                username: username,
-                password: password
+        $http.get('/signup/facebook', {
             })
             // handle success
             .success(function(data, status) {
@@ -46,22 +61,7 @@ angular
         return deferred.promise;
 
     }
-    function isLoggedIn() {
-        if (user) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    // return available functions for use in the controllers
-    return ({
-      isLoggedIn: isLoggedIn,
-      getUserStatus: getUserStatus,
-      login: login,
-      logout: logout,
-      register: register
-    });
 };
 
 
