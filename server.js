@@ -59,9 +59,7 @@ app.get('/menu', ensureAuthenticated, function(req, res) {
             console.log(err); // handle errors
             res.redirect('/signup');
         } else {
-            res.redirect('/menu', {
-                user: user
-            });
+            res.redirect('/menu');
         }
     });
 });
