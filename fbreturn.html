@@ -11,6 +11,7 @@
         console.log("error");
       } else if (hash) {
         // login success
+        console.log(window.location.href)
         var loginStatus = window.location.href.split('?')[1].split('&')[0].split('=')[1];
         localStorage.setItem('login-status', loginStatus);
       }
