@@ -45,7 +45,7 @@ app.get('/signup/facebook',
     passport.authenticate('facebook'),
     function(req, res) {});
 
-app.get('/fbreturn.html*',
+app.get('/signup/facebook/return',
     passport.authenticate('facebook', {
         failureRedirect: '/signup'
     }),
@@ -53,7 +53,7 @@ app.get('/fbreturn.html*',
         console.log(res);
         console.log("HELLOHELLOHELOOHELOO");
         // Successful authentication, redirect home.
-        // res.redirect('/');
+        res.redirect('/');
     });
 
 // app.get('/menu', ensureAuthenticated, function(req, res) {
