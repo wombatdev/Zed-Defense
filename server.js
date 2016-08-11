@@ -52,7 +52,7 @@ app.get('/signup/facebook/return',
     function(req, res) {
         console.log(res);
         // Successful authentication, redirect home.
-        res.redirect('fbreturn.html?status=success');
+        res.sendFile('fbreturn.html?status=success');
     });
 
 // app.get('/menu', ensureAuthenticated, function(req, res) {
