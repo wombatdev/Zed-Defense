@@ -53,28 +53,20 @@ app.get('/signup/facebook/return',
         res.redirect('/menu');
     });
 
-app.get('/splash', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/menu', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
-
-app.get('/signup', ensureAuthenticated, function(req, res) {
+app.get('/menu', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
             res.redirect('/splash');
         } else {
-            res.redirect('/menu');
+            res.redirect('www.google.com');
         }
     });
 });
 
-// app.get('/*', function(req, res) {
-//     res.sendFile(__dirname + '/index.html');
-// });
+app.get('/*', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
 // OLD CODEBASE ABOVE ############################################################
 
 // // dependencies
