@@ -53,13 +53,21 @@ app.get('/signup/facebook/return',
         res.redirect('/menu');
     });
 
-app.get('/menu', ensureAuthenticated, function(req, res) {
+app.get('/splash', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/menu', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
             res.redirect('/splash');
         } else {
-            res.redirect('www.google.com');
+            res.redirect('/menu');
         }
     });
 });
@@ -227,5 +235,5 @@ http.listen(process.env.PORT || 3001, function() {
 // test authentication
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-        res.redirect('/');
+        res.redirect('/signup');
 }
