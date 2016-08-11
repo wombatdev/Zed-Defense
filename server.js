@@ -45,12 +45,13 @@ app.get('/signup/facebook',
     passport.authenticate('facebook'),
     function(req, res) {});
 
-app.get('/signup/facebook/return',
+app.get('/fbreturn.html*',
     passport.authenticate('facebook', {
         failureRedirect: '/signup'
     }),
     function(req, res) {
         console.log(res);
+        console.log("HELLOHELLOHELOOHELOO");
         // Successful authentication, redirect home.
         // res.redirect('/');
     });
