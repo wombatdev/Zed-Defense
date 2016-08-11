@@ -53,7 +53,7 @@ app.get('/signup/facebook/return',
         console.log(res);
         console.log("HELLOHELLOHELOOHELOO");
         // console.log(res.route.oauthID);
-        console.log(res.sessionID);
+        console.log(res.writable);
         // Successful authentication, redirect home.
         res.redirect('/');
     });
