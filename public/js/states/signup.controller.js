@@ -5,11 +5,10 @@
         .module("zombiedefense")
         .controller("SignupController", [
             "$scope",
-            "UserFactory",
             SignupControllerFunction
         ])
 
-    function SignupControllerFunction($scope, UserFactory) {
+    function SignupControllerFunction($scope) {
         var vm = this;
         $scope.pageClass = "signup";
 
