@@ -53,6 +53,14 @@ app.get('/signup/facebook/return',
         res.redirect('/menu');
     });
 
+app.get('/splash', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/menu', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
 app.get('/', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
