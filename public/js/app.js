@@ -27,7 +27,7 @@
             //     // }
             // })
             .state("Splash", {
-                url: "/splash",
+                url: "/",
                 templateUrl: "/assets/js/states/splash.html",
                 controller: "SplashController",
                 controllerAs: "SplashViewModel"
