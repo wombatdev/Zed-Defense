@@ -3,7 +3,9 @@ var bcrypt   = require('bcrypt-nodejs');
 
 var UserSchema = mongoose.Schema(
     {
-    uid: String
+    oauthID: Number,
+    name: String,
+    created: Date
     }
 );
 
@@ -26,11 +28,11 @@ db.once('open', function() {
   console.log("Connected to MongoDB!");
 });
 
-// if(process.env.NODE_ENV == "production"){
-//   mongoose.connect(process.env.MONGODB_URI);
-// }else{
-//   mongoose.connect("mongodb://localhost/worldofzed");
-// }
-mongoose.connect("mongodb://localhost/worldofzed");
+if(process.env.NODE_ENV == "production"){
+  mongoose.connect(process.env.MONGODB_URI);
+}else{
+  mongoose.connect("mongodb://localhost/worldofzed");
+}
+// mongoose.connect("mongodb://localhost/worldofzed");
 
 module.exports = mongoose;
