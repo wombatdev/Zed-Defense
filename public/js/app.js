@@ -28,7 +28,7 @@
             })
             .state("Redirect", {
                 url: "/redirect",
-                template: ""
+                template: "",
                 controller: function($state) {
                     $state.go("Menu");
                 }

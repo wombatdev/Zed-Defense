@@ -139,7 +139,8 @@ body {
     background-size: cover;
 }
 .play {
-    /*z-index: 99;*/
+    background: url("/assets/images/background6.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
 [data-ui-view].ng-enter, [data-ui-view].ng-leave {
     position: absolute;
