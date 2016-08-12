@@ -11,7 +11,7 @@
         var vm = this;
         vm.pageClass = "play";
 
-        window.game = new Phaser.Game(800, 600, Phaser.AUTO, '');
+        window.game = new Phaser.Game(800, 600, Phaser.AUTO, 'gameContainer');
 
         game.state.add('boot', bootState);
         game.state.add('load', loadState);

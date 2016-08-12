@@ -94,6 +94,13 @@ var playState = {
         game.input.activePointer.x = game.width/2;
         game.input.activePointer.y = game.height/2;
 
+        //instructionsmessage!
+        game.instructions = this.add.text(400,550, 'Use the arrow keys to move left and right\nand click to shoot',
+        {font: '20px monospace', fill: '#fff', align: 'center'});
+        game.instructions.anchor.setTo(0.5, 0.5);
+        game.instExpire = game.time.now + 6000;
+    },
+
         game.timer = game.time.create();
         // Create a delayed event 60s from now
         game.timerEvent = game.timer.add(Phaser.Timer.SECOND * 60, endTimer, this);
@@ -112,6 +119,14 @@ var playState = {
             else {
                 game.otherPlayersGuns.children[gunIndex].x += 30;
             }
+        });
+        game.socket.on('playerDeathInput', function(msg) {
+            game.timer.stop();
+            game.state.start('lose');
+        });
+        game.socket.on('playerWinInput', function(msg) {
+            game.timer.stop();
+            game.state.start('win');
         });
     },
 
@@ -176,6 +191,7 @@ var playState = {
             // If a zombie reaches the bottom of the screen, everyone dies
             if (enemy.y > this.game.height - enemy.height*0.25) {
                 game.timer.stop();
+                socket.emit('playerDeathOutput', "DEAD!");
                 game.state.start('lose');
             }
         }, this);
@@ -217,6 +233,9 @@ var playState = {
     		enemy.scaleTween.pendingDelete = false;
         	enemy.kill();
     	};
+        if (game.instructions.exists && game.time.now > game.instExpire) {
+                game.instructions.destroy();
+              }
     },
 
     render: function() {
@@ -230,7 +249,7 @@ var playState = {
         game.debug.text(game.time.fps || '--', 2, 28, "#00ff00");
         game.debug.text("Players: "+(game.otherPlayersInGame.length+1) || '--', 2, 42, "#00ff00");
         game.debug.text("Enemies: "+game.enemyGroup.total || '--', 2, 56, "#00ff00");
-        game.debug.cameraInfo(game.camera, 2, 70);
+        // game.debug.cameraInfo(game.camera, 2, 70);
         // var pixelHeightDebug = 56;
         // game.enemyGroup.forEachAlive(function(enemy) {
         //     // game.debug.body(enemy);
@@ -472,5 +491,6 @@ function formatTime(s) {
 
 function endTimer() {
     game.timer.stop();
+    socket.emit('playerWinOutput', "SUCCESS!");
     game.state.start('win');
 };

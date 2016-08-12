@@ -1,45 +1,103 @@
+// dependencies
 var express = require("express");
 var app = express();
-var session = require('express-session');
-var mongoose = require('./db/connection');
-var cmongo  = require("connect-mongo");
-var MongoSession = cmongo(session);
-var passport = require('passport');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
+var passport = require('passport');
+var config = require('./oauth.js');
+var fbAuth = require('./authentication.js');
 
+var mongoose = require('./db/connection.js');
 var User = mongoose.model("User");
 
+// Use application-level middleware for common functionality, including
+// logging, parsing, and session handling.
 app.set("port", process.env.PORT || 3001);
-
-// app.set("view engine", "hbs");
-// app.engine(".hbs", hbs({
-//     extname: ".hbs",
-//     partialsDir: "views/",
-//     layoutsDir: "views/",
-//     defaultLayout: "layout-main"
-// }));
-
 app.use("/assets", express.static("public"));
-app.use(bodyParser.json({
-    extended: true
-}));
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').json({ extended: true }));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+// var cmongo  = require("connect-mongo");
+// var MongoSession = cmongo(session);
 
-app.get('/auth/facebook',
-  passport.authenticate('facebook'));
+// Initialize Passport and restore authentication state, if any, from the
+// session.
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
 
-app.get('/*', function(req, res) {
+
+// serialize and deserialize
+passport.serializeUser(function(user, done) {
+  console.log('serializeUser: ' + user._id);
+  done(null, user._id);
+});
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user){
+    console.log(user);
+      if(!err) done(null, user);
+      else done(err, null);
+    });
+});
+
+app.get('/signup/facebook',
+    passport.authenticate('facebook'),
+    function(req, res) {});
+
+app.get('/signup/facebook/return',
+    passport.authenticate('facebook', {
+        failureRedirect: '/signup'
+    }),
+    function(req, res) {
+        res.redirect('/redirect');
+    });
+
+app.get('/splash', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+
+app.get('/redirect', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/menu', ensureAuthenticatedMenu, function(req, res) {
+    User.findOne({_id: req.user._id}).then(function(user){
+        console.log(user);
+        res.json(user);
+    });
+});
+
+app.get('/*', ensureAuthenticatedRoot, function(req, res) {
+    User.findById(req.session.passport.user, function(err, user) {
+        if (err) {
+            console.log(err); // handle errors
+            console.log("You tried /*. req.isAuthenticated() was TRUE. But we did not find a user with that ID");
+            res.redirect('/signup');
+        } else {
+            console.log("You tried /*. req.isAuthenticated() was TRUE. We found a user and are redirecting you to /menu");
+            res.redirect('/menu');
+        }
+    });
+});
+
+// test authentication
+function ensureAuthenticatedRoot(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.log("req.isAuthenticated() was TRUE");
+        return next();
+    }
+    console.log("req.isAuthenticated() was FALSE");
+    res.redirect('/splash');
+}
+function ensureAuthenticatedMenu(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.log("req.isAuthenticated() was TRUE");
+        return next();
+    }
+    console.log("req.isAuthenticated() was FALSE");
+    res.redirect('/signup');
+}
 
 var randomString = function(length) {
     var text = "";
@@ -102,12 +160,15 @@ io.on('connection', function(socket) {
         });
         socket.broadcast.emit('playerMovingInput', JSON.stringify(response));
     });
+    socket.on('playerDeathOutput', function(msg) {
+        socket.broadcast.emit('playerDeathInput', msg);
+    });
+    socket.on('playerWinOutput', function(msg) {
+        socket.broadcast.emit('playerWinInput', msg);
+    });
 });
 
-mongoose.connect(process.env.MONGODB_URI, function (error) {
-    if (error) console.error(error);
-    else console.log('mongo connected');
-    http.listen(process.env.PORT || 3001, function() {
+//port
+http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
-    });
 });

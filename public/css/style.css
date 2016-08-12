@@ -46,7 +46,6 @@ body {
     width: 100%;
     margin: 0 auto;
     position: absolute;
-    background-size: cover;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -54,12 +53,13 @@ body {
     color: black;
     text-align: center;
     animation-delay: 0s;
-    z-index: -99;
+    /*z-index: -1;*/
 }
 .splash {
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
-.splashTitle {
+.splashTitle, .menuTitle {
     font-size: 7em;
     margin-right: 3em;
 }
@@ -67,14 +67,14 @@ body {
     color: white;
     font-size: 1.5em;
 }
-.splashMenu {
+.splashMenu, .menuMenu {
     margin-top: 2em;
     height: 20em;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-.splashMenuButton {
+.splashMenuButton, .menuMenuButton {
     color: white;
     font-size: 3em;
     border: 0.25em solid white;
@@ -91,7 +91,7 @@ body {
     animation-fill-mode: forwards;
     animation-duration: 2s;
 }
-/*.splashTitle.fade-in {
+/*.splashTitle.fade-in, .menuTitle.fade-in {
     animation-delay: 0s;
 }
 .storyOne.fade-in {
@@ -121,16 +121,28 @@ body {
 .storyRedThree {
     color: #af111c;
 }
+.menuMenu.fade-in {
+    animation-delay: 2s;
+}
 .signup {
     background: url("/assets/images/background4.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
-.signupBack {
+.backButton {
     position: absolute;
     height: 4em;
     top: 1em;
     left: 1em;
 }
-
+.menu {
+    background: url("/assets/images/background5.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+.play {
+    background: url("/assets/images/background6.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
 [data-ui-view].ng-enter, [data-ui-view].ng-leave {
     position: absolute;
     left: 0;

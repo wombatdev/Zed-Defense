@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>World of Zed</title>
+  <script>
+    window.onload = function () {
+      var hash = window.location.hash;
+      console.log(hash);
+      if (window.location.search.substring(1).indexOf("error") !== -1) {
+        // login failure
+        console.log("error");
+      } else if (hash) {
+        // login success
+        console.log(window.location.href)
+        var loginStatus = window.location.href.split('?')[1].split('&')[0].split('=')[1];
+        localStorage.setItem('login-status', loginStatus);
+      }
+    }
+  </script>
+</head>
+<body>
+
+</body>
+</html>

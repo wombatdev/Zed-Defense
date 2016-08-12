@@ -19,8 +19,22 @@
     function RouterFunction($stateProvider, $locationProvider, $urlRouterProvider) {
         $locationProvider.html5Mode(true)
         $stateProvider
-            .state("Splash", {
+            .state("root", {
                 url: "/",
+                template: ""
+                // controller: function($state, user) {
+                //     if ($state.is("root")) $state.go(user.loggedIn ? "Menu" : "Splash");
+                // }
+            })
+            .state("Redirect", {
+                url: "/redirect",
+                template: "",
+                controller: function($state) {
+                    $state.go("Menu");
+                }
+            })
+            .state("Splash", {
+                url: "/splash",
                 templateUrl: "/assets/js/states/splash.html",
                 controller: "SplashController",
                 controllerAs: "SplashViewModel"

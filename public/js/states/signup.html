@@ -1,18 +1,18 @@
 <!-- <section class="signupSection"> -->
-<img class="signupBack" data-ng-src="/assets/images/arrowbackwhite.png" data-ui-sref="Splash" />
+<img class="backButton" data-ng-src="/assets/images/arrowbackwhite.png" data-ui-sref="Splash" alt="Go Back" />
 <h2>Signup</h2>
+<!-- <div id="status">
+</div> -->
 
-<form method="post" action="/signup">
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input class="form-control" type="text" name="email" id="email">
-    </div>
+<a href="/signup/facebook" target="_self"><img data-ng-src="/assets/images/fblogin.png" alt="Facebook Log In" /></a>
+<!-- onclick='window.location="/signup/facebook"' -->
+<!-- <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button> -->
 
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input class="form-control" type="password" name="password" id="password">
-    </div>
-
-    <input class="btn btn-default" type="submit">
-</form>
+<!-- <form data-ng-submit="SignupViewModel.create(email, password)">
+    <input type="text" placeholder="Email" data-ng-model="email" />
+    <input type="text" placeholder="Password" data-ng-model="password" />
+    <br><br>
+    <button type="submit">Sign Up</button>
+</form> -->
 <!-- </section> -->

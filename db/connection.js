@@ -1,27 +1,38 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 
-var User = mongoose.Schema({
-  local : {
-    email        : String,
-    password     : String,
-  }
-});
+var UserSchema = mongoose.Schema(
+    {
+    oauthID: Number,
+    name: String,
+    created: Date
+    }
+);
 
-User.methods.validPassword = function(password) {
+UserSchema.methods.validPassword = function(password) {
   return bcrypt.compareSync(password, this.local.password);
 };
 
-User.methods.encrypt = function(password) {
+UserSchema.methods.encrypt = function(password) {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
-mongoose.model('User', User);
+mongoose.model('User', UserSchema);
+
+var db = mongoose.connection;
+
+db.on('error', function(err){
+  console.log(err);
+});
+db.once('open', function() {
+  console.log("Connected to MongoDB!");
+});
 
 if(process.env.NODE_ENV == "production"){
   mongoose.connect(process.env.MONGODB_URI);
 }else{
   mongoose.connect("mongodb://localhost/worldofzed");
 }
+// mongoose.connect("mongodb://localhost/worldofzed");
 
 module.exports = mongoose;

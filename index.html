@@ -11,22 +11,29 @@
     <script src="/assets/js/vendor/angular-ui-router.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-    <!-- <script src="/assets/js/vendor/pagetransitions.js"></script> -->
     <script src="../socket.io/socket.io.js"></script>
     <script src="//cdn.jsdelivr.net/phaser/2.6.1/phaser.js"></script>
     <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/user.factory.js"></script>
+    <!-- <script src="/assets/js/services.js"></script> -->
     <script src="/assets/js/states/splash.controller.js"></script>
     <script src="/assets/js/states/play.controller.js"></script>
     <script src="/assets/js/states/menu.controller.js"></script>
     <script src="/assets/js/states/signin.controller.js"></script>
     <script src="/assets/js/states/signup.controller.js"></script>
-
     <script src="/assets/js/phaser/boot.js"></script>
     <script src="/assets/js/phaser/load.js"></script>
     <script src="/assets/js/phaser/menu.js"></script>
     <script src="/assets/js/phaser/play.js"></script>
     <script src="/assets/js/phaser/win.js"></script>
     <script src="/assets/js/phaser/lose.js"></script>
+    <script type="text/javascript">
+    console.log("looking for hash");
+    if (window.location.hash && window.location.hash == '#_=_') {
+        console.log("removing hash");
+        window.location.hash = '';
+    }
+    </script>
     <base href="/" />
 </head>
 
