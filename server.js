@@ -50,16 +50,7 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        User.findById(req.session.passport.user, function(err, user) {
-            if (err) {
-                console.log(err); // handle errors
-                console.log("You went the FB Login route. But we didn't find the user after for some reason.");
-                res.redirect('/signup');
-            } else {
-                console.log("You went the FB Login route. We found a user and are redirecting you to /menu");
-                res.redirect('/menu', {user: user});
-            }
-        });
+        res.redirect('/');
     });
 
 app.get('/splash', function(req, res) {
