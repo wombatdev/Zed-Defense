@@ -65,8 +65,10 @@ app.get('/*', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
+            console.log("Not authenticated, going to splash.");
             res.redirect('/splash');
         } else {
+            console.log("Authenticated, going to menu.");
             res.redirect('/menu');
         }
     });
@@ -79,7 +81,7 @@ app.get('/*', ensureAuthenticated, function(req, res) {
 // test authentication
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
-        // res.redirect('/splash');
+        res.redirect('/splash');
 }
 
 // OLD CODEBASE ABOVE ############################################################
