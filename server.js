@@ -50,7 +50,16 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        res.redirect('/');
+        User.findById(req.session.passport.user, function(err, user) {
+            if (err) {
+                console.log(err); // handle errors
+                console.log("You went the FB Login route. But we didn't find the user after for some reason.");
+                res.redirect('/signup');
+            } else {
+                console.log("You went the FB Login route. We found a user and are redirecting you to /menu");
+                res.redirect('/menu', {user: user});
+            }
+        });
     });
 
 app.get('/splash', function(req, res) {
@@ -58,7 +67,6 @@ app.get('/splash', function(req, res) {
 });
 
 app.get('/menu', function(req, res) {
-    console.log(req);
     User.findOne({user: req.user}).then(function(user){
         res.json(user);
     });
@@ -68,12 +76,10 @@ app.get('/*', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
-            console.log("Not authenticated, going to splash.");
+            console.log("You tried /*. req.isAuthenticated() was TRUE. But we did not find a user with that ID");
             res.redirect('/signup');
         } else {
-            console.log("Authenticated, going to menu.");
-            console.log(req.session.passport.user);
-            // res.json(user);
+            console.log("You tried /*. req.isAuthenticated() was TRUE. We found a user and are redirecting you to /menu");
             res.redirect('/menu', {user: user});
         }
     });
@@ -81,8 +87,12 @@ app.get('/*', ensureAuthenticated, function(req, res) {
 
 // test authentication
 function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-        res.redirect('/splash');
+    if (req.isAuthenticated()) {
+        console.log("req.isAuthenticated() was TRUE");
+        return next();
+    }
+    console.log("req.isAuthenticated() was FALSE");
+    res.redirect('/splash');
 }
 
 var randomString = function(length) {
