@@ -50,7 +50,7 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        res.redirect('/');
+        res.redirect('/splash');
     });
 
 app.get('/splash', function(req, res) {
