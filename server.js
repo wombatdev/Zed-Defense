@@ -64,7 +64,7 @@ app.get('/menu', function(req, res) {
     console.log(req.user);
     console.log(req.user);
     console.log("YOYOYOYOYOYOYOYOYOYOYYOO");
-    User.findOne({_id: req.session.passport.user._id}).then(function(user){
+    User.findOne({_id: req.user._id}).then(function(user){
 
         console.log(user);
         res.json(user);
