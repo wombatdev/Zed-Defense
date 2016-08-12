@@ -160,6 +160,12 @@ io.on('connection', function(socket) {
         });
         socket.broadcast.emit('playerMovingInput', JSON.stringify(response));
     });
+    socket.on('playerDeathOutput', function(msg) {
+        socket.broadcast.emit('playerDeathInput', msg);
+    });
+    socket.on('playerWinOutput', function(msg) {
+        socket.broadcast.emit('playerWinInput', msg);
+    });
 });
 
 //port

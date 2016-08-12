@@ -137,6 +137,7 @@ body {
 .menu {
     background: url("/assets/images/background5.jpg") no-repeat center center fixed;
     background-size: cover;
+    color: white;
 }
 .play {
     background: url("/assets/images/background6.jpg") no-repeat center center fixed;
