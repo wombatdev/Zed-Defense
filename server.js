@@ -59,7 +59,7 @@ app.get('/splash', function(req, res) {
 
 app.get('/menu', function(req, res) {
     console.log(req.session.passport.user);
-    User.findOne({user: req.user}).then(function(user){
+    User.findOne({user: req.session.passport.user}).then(function(user){
         res.json(user);
     });
 });
