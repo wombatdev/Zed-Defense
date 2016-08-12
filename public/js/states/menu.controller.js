@@ -5,12 +5,20 @@
         .module("zombiedefense")
         .controller("MenuController", [
             "$scope",
+            "$state",
+            "$stateParams",
+            "UserFactory",
             MenuControllerFunction
         ])
 
-    function MenuControllerFunction($scope) {
+    function MenuControllerFunction($scope, $state, $stateParams, UserFactory) {
         var vm = this;
         $scope.pageClass = "menu";
+
+        UserFactory.get({_id: $stateParams._id}).$promise.then(function (user) {
+            console.log(user);
+            vm.user = user;
+        });
     }
 
 })();

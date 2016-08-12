@@ -52,7 +52,7 @@ body {
     font-family: 'Cinzel', serif;
     color: black;
     text-align: center;
-    /*animation-delay: 0s;*/
+    animation-delay: 0s;
     /*z-index: -1;*/
 }
 .splash {
@@ -91,7 +91,7 @@ body {
     animation-fill-mode: forwards;
     animation-duration: 2s;
 }
-.splashTitle.fade-in, .menuTitle.fade-in {
+/*.splashTitle.fade-in, .menuTitle.fade-in {
     animation-delay: 0s;
 }
 .storyOne.fade-in {
@@ -117,7 +117,7 @@ body {
 }
 .storyRedTwo {
     animation-delay: 6.5s;
-}
+}*/
 .storyRedThree {
     color: #af111c;
 }
