@@ -58,8 +58,9 @@ app.get('/splash', function(req, res) {
 });
 
 app.get('/menu', function(req, res) {
-    console.log(req.session.passport.user);
-    User.findOne({user: req.session.passport.user}).then(function(user){
+
+    User.findOne({_id: req.session.passport.user._id}).then(function(user){
+        console.log(user);
         res.json(user);
     });
 });
