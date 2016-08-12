@@ -52,14 +52,14 @@ body {
     font-family: 'Cinzel', serif;
     color: black;
     text-align: center;
-    animation-delay: 0s;
+    /*animation-delay: 0s;*/
     /*z-index: -1;*/
 }
 .splash {
     background: url("/assets/images/background1.jpg") no-repeat center center fixed;
     background-size: cover;
 }
-.splashTitle {
+.splashTitle, .menuTitle {
     font-size: 7em;
     margin-right: 3em;
 }
@@ -67,14 +67,14 @@ body {
     color: white;
     font-size: 1.5em;
 }
-.splashMenu {
+.splashMenu, .menuMenu {
     margin-top: 2em;
     height: 20em;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
-.splashMenuButton {
+.splashMenuButton, .menuMenuButton {
     color: white;
     font-size: 3em;
     border: 0.25em solid white;
@@ -91,7 +91,7 @@ body {
     animation-fill-mode: forwards;
     animation-duration: 2s;
 }
-/*.splashTitle.fade-in {
+.splashTitle.fade-in, .menuTitle.fade-in {
     animation-delay: 0s;
 }
 .storyOne.fade-in {
@@ -117,9 +117,12 @@ body {
 }
 .storyRedTwo {
     animation-delay: 6.5s;
-}*/
+}
 .storyRedThree {
     color: #af111c;
+}
+.menuMenu.fade-in {
+    animation-delay: 2s;
 }
 .signup {
     background: url("/assets/images/background4.jpg") no-repeat center center fixed;

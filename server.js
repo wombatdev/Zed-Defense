@@ -58,7 +58,9 @@ app.get('/splash', function(req, res) {
 });
 
 app.get('/menu', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
+    User.findOne({user: req.user}).then(function(user){
+        res.json(user);
+    });
 });
 
 app.get('/*', ensureAuthenticated, function(req, res) {
@@ -69,109 +71,18 @@ app.get('/*', ensureAuthenticated, function(req, res) {
             res.redirect('/splash');
         } else {
             console.log("Authenticated, going to menu.");
-            res.redirect('/menu');
+            console.log(req.session.passport.user);
+            // res.json(user);
+            res.redirect('/menu', {user: user});
         }
     });
 });
-
-// app.get('/*', function(req, res) {
-//     res.sendFile(__dirname + '/index.html');
-// });
 
 // test authentication
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
         res.redirect('/splash');
 }
-
-// OLD CODEBASE ABOVE ############################################################
-
-// // dependencies
-// var fs = require('fs');
-// var express = require('express');
-// var routes = require('./routes');
-// var http = require("http").Server(app);
-// var io = require("socket.io")(http);
-// var path = require('path');
-// var config = require('./oauth.js');
-// var passport = require('passport');
-// var fbAuth = require('./authentication.js');
-//
-// // // connect to the database
-// // var mongoose = require('./db/connection.js');
-// //
-// // // create a user model
-// // var User = mongoose.model("User");
-//
-// // // config
-// // passport.use(new FacebookStrategy({
-// //   clientID: config.facebook.clientID,
-// //   clientSecret: config.facebook.clientSecret,
-// //   callbackURL: config.facebook.callbackURL
-// //   },
-// //   function(accessToken, refreshToken, profile, done) {
-// //     User.findOne({ oauthID: profile.id }, function(err, user) {
-// //       if(err) {
-// //         console.log(err);  // handle errors!
-// //       }
-// //       if (!err && user !== null) {
-// //         done(null, user);
-// //       } else {
-// //         user = new User({
-// //           oauthID: profile.id,
-// //           name: profile.displayName,
-// //           created: Date.now()
-// //         });
-// //         user.save(function(err) {
-// //           if(err) {
-// //             console.log(err);  // handle errors!
-// //           } else {
-// //             console.log("saving user ...");
-// //             done(null, user);
-// //           }
-// //         });
-// //       }
-// //     });
-// //   }
-// // ));
-//
-// var app = express();
-//
-// app.set("port", process.env.PORT || 3001);
-// app.use("/assets", express.static("public"));
-// app.use(require('morgan')('combined'));
-// app.use(require('cookie-parser')());
-// app.use(require('body-parser').json({ extended: true }));
-// app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
-//
-// // serialize and deserialize
-// passport.serializeUser(function(user, done) {
-//   console.log('serializeUser: ' + user._id);
-//   done(null, user._id);
-// });
-// passport.deserializeUser(function(id, done) {
-//   User.findById(id, function(err, user){
-//     console.log(user);
-//       if(!err) done(null, user);
-//       else done(err, null);
-//     });
-// });
-//
-// app.get('/signup/facebook',
-//     passport.authenticate('facebook'),
-//     function(req, res){});
-//
-// app.get('callback.html',
-//     passport.authenticate('facebook', { failureRedirect: 'www.yahoo.com' }),
-//     function(req, res) {
-//         console.log(res);
-//         // Successful authentication, redirect home.
-//         res.redirect('www.google.com');
-//     });
-//
-// app.get('/*', function(req, res) {
-//     res.sendFile(__dirname + '/index.html');
-// });
 
 var randomString = function(length) {
     var text = "";
