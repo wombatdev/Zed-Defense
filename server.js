@@ -57,7 +57,13 @@ app.get('/splash', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/menu', ensureAuthenticated, function(req, res) {
+app.get('/menu', function(req, res) {
+    User.findOne({user: req.user}).then(function(user){
+        res.json(user);
+    });
+});
+
+app.get('/*', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
@@ -65,13 +71,9 @@ app.get('/menu', ensureAuthenticated, function(req, res) {
             res.redirect('/signup');
         } else {
             console.log("You tried /*. req.isAuthenticated() was TRUE. We found a user and are redirecting you to /menu");
-            res.json(user);
+            res.redirect('/menu', {user: user});
         }
     });
-});
-
-app.get('/*', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
 });
 
 // test authentication
