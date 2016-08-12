@@ -58,6 +58,7 @@ app.get('/splash', function(req, res) {
 });
 
 app.get('/menu', function(req, res) {
+    console.log(req.user);
     User.findOne({user: req.user}).then(function(user){
         res.json(user);
     });
