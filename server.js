@@ -58,7 +58,8 @@ app.get('/splash', function(req, res) {
 });
 
 app.get('/menu', function(req, res) {
-    User.findOne({user: user}).then(function(user){
+    console.log(req);
+    User.findOne({user: req.user}).then(function(user){
         res.json(user);
     });
 });
@@ -73,7 +74,7 @@ app.get('/*', ensureAuthenticated, function(req, res) {
     //         console.log("Authenticated, going to menu.");
     //         console.log(req.session.passport.user);
     //         // res.json(user);
-            res.redirect('/menu');
+            res.redirect('/menu', {user: user});
     //     }
     // });
 });
