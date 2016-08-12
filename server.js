@@ -50,10 +50,14 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        res.redirect('/splash');
+        res.redirect('/redirect');
     });
 
 app.get('/splash', function(req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/redirect', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 

@@ -25,7 +25,12 @@
                 // controller: function($state, user) {
                 //     if ($state.is("root")) $state.go(user.loggedIn ? "Menu" : "Splash");
                 // }
-            })
+            }).state("Redirect", {
+                url: "/redirect",
+                template: ""
+                controller: function($state) {
+                    $state.go("Menu");
+                }
             .state("Splash", {
                 url: "/splash",
                 templateUrl: "/assets/js/states/splash.html",
