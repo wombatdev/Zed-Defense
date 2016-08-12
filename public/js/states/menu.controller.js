@@ -15,7 +15,7 @@
         var vm = this;
         $scope.pageClass = "menu";
 
-        UserFactory.get({_id: $stateParams._id}).$promise.then(function (user) {
+        UserFactory.get().$promise.then(function (user) {
             console.log(user);
             vm.user = user;
         });
