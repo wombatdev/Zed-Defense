@@ -57,14 +57,14 @@ app.get('/splash', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/menu', ensureAuthenticated, function(req, res) {
+app.get('/menu', ensureAuthenticatedMenu, function(req, res) {
     User.findOne({_id: req.user._id}).then(function(user){
         console.log(user);
         res.json(user);
     });
 });
 
-app.get('/*', ensureAuthenticated, function(req, res) {
+app.get('/*', ensureAuthenticatedRoot, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
