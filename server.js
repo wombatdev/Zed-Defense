@@ -61,7 +61,7 @@ app.get('/menu', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/', ensureAuthenticated, function(req, res) {
+app.get('/*', ensureAuthenticated, function(req, res) {
     User.findById(req.session.passport.user, function(err, user) {
         if (err) {
             console.log(err); // handle errors
@@ -72,9 +72,16 @@ app.get('/', ensureAuthenticated, function(req, res) {
     });
 });
 
-app.get('/*', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
-});
+// app.get('/*', function(req, res) {
+//     res.sendFile(__dirname + '/index.html');
+// });
+
+// test authentication
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) { return next(); }
+        // res.redirect('/splash');
+}
+
 // OLD CODEBASE ABOVE ############################################################
 
 // // dependencies
@@ -231,9 +238,3 @@ io.on('connection', function(socket) {
 http.listen(process.env.PORT || 3001, function() {
     console.log("We're online on *:3001");
 });
-
-// test authentication
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { return next(); }
-        res.redirect('/splash');
-}
