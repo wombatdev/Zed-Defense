@@ -50,7 +50,7 @@ app.get('/signup/facebook/return',
         failureRedirect: '/signup'
     }),
     function(req, res) {
-        res.redirect('/menu');
+        res.redirect('/');
     });
 
 app.get('/splash', function(req, res) {
@@ -65,18 +65,18 @@ app.get('/menu', function(req, res) {
 });
 
 app.get('/*', ensureAuthenticated, function(req, res) {
-    // User.findById(req.session.passport.user, function(err, user) {
-    //     if (err) {
-    //         console.log(err); // handle errors
-    //         console.log("Not authenticated, going to splash.");
-    //         res.redirect('/splash');
-    //     } else {
-    //         console.log("Authenticated, going to menu.");
-    //         console.log(req.session.passport.user);
-    //         // res.json(user);
+    User.findById(req.session.passport.user, function(err, user) {
+        if (err) {
+            console.log(err); // handle errors
+            console.log("Not authenticated, going to splash.");
+            res.redirect('/signup');
+        } else {
+            console.log("Authenticated, going to menu.");
+            console.log(req.session.passport.user);
+            // res.json(user);
             res.redirect('/menu', {user: user});
-    //     }
-    // });
+        }
+    });
 });
 
 // test authentication
