@@ -57,15 +57,8 @@ app.get('/splash', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/menu', function(req, res) {
-    console.log("HEYHEYHEYHEYHEYHEYHEY");
-    console.log(req.user);
-    console.log(req.user);
-    console.log(req.user);
-    console.log(req.user);
-    console.log("YOYOYOYOYOYOYOYOYOYOYYOO");
+app.get('/menu', ensureAuthenticated, function(req, res) {
     User.findOne({_id: req.user._id}).then(function(user){
-
         console.log(user);
         res.json(user);
     });
@@ -85,13 +78,21 @@ app.get('/*', ensureAuthenticated, function(req, res) {
 });
 
 // test authentication
-function ensureAuthenticated(req, res, next) {
+function ensureAuthenticatedRoot(req, res, next) {
     if (req.isAuthenticated()) {
         console.log("req.isAuthenticated() was TRUE");
         return next();
     }
     console.log("req.isAuthenticated() was FALSE");
     res.redirect('/splash');
+}
+function ensureAuthenticatedMenu(req, res, next) {
+    if (req.isAuthenticated()) {
+        console.log("req.isAuthenticated() was TRUE");
+        return next();
+    }
+    console.log("req.isAuthenticated() was FALSE");
+    res.redirect('/signup');
 }
 
 var randomString = function(length) {
